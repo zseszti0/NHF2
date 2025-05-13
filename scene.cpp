@@ -154,7 +154,7 @@ void ListingScene::LoadScene() {
 }
 void ListingScene::Reset() {
     currentMenu = 0;
-    for(int i = 1 ; i < menus.size(); i++) {
+    for(size_t i = 1 ; i < menus.size(); i++) {
         for(auto element : menus.at(i)) {
             element->SetVisible(false);
         }
@@ -377,7 +377,7 @@ void PreFight::CheckButtonsOnClick(int mouseX, int mouseY) {
         }
     }
 
-    for (int i = 0; i < Game::characters.size(); i++) {
+    for (size_t i = 0; i < Game::characters.size(); i++) {
         auto button = dynamic_cast<Button*>(Game::preFightCharChoosers.at(i+1));
         if (button) {
             if (button->HandleClick(mouseX, mouseY)) {
@@ -394,7 +394,7 @@ void PreFight::CheckButtonsOnClick(int mouseX, int mouseY) {
         }
 }
 bool PreFight::AddCharacter(Character* newCharacter) {
-    int i = 0 ;
+    size_t i = 0 ;
     for(auto iter = characters.begin(); iter != characters.end();) {
         if((*iter)->GetName() == newCharacter->GetName()) {
             characters.erase(iter);
@@ -553,7 +553,7 @@ void AdventuresMenu::PositionNodes() {
         nodesSprite.push_back(node->GetIcon());
     }
     EQPosUIElements(SDL_Rect{200,287,1500,1000},nodesSprite,true);
-    for (int i = 0; i < nodes.size(); i++) {
+    for (size_t i = 0; i < nodes.size(); i++) {
         if (i % 2 != 0) {
         nodes.at(i)->GetIcon()->GetTransform().position.y += 515;
         }

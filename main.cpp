@@ -411,7 +411,7 @@ int main(int argc, char* argv[]) {
 
     //triggers / menus
     std::vector<Button*> charOverview_ops;
-    for(int i = 0; i < characters.size(); i++) {
+    for(size_t i = 0; i < characters.size(); i++) {
         std::string name = characters.at(i)->GetName();
         std::string path = "./assets/charOverview/" + characters.at(i)->GetName() + ".png";
         charOverview_ops.push_back(new Button(name.c_str(),path.c_str(),SDL_Rect{0,753,258,254}));
@@ -460,9 +460,9 @@ int main(int argc, char* argv[]) {
     UIElement charOverview_KitDesc("kitDesc","./assets/charOverview/kitDesc.png",SDL_Rect{1483,270,413,383});
 
     std::vector<std::vector<UIElement*>> charOverview_menus;
-    for (int i = 0; i < characters.size(); i++) {
-        std::string path = "./assets/charOverview/" + characters.at(i)->GetName() + "story.png";
-        UIElement* story = new UIElement("story",path.c_str(),SDL_Rect{79,527,498,182});
+    for (auto & character : characters) {
+        std::string path = "./assets/charOverview/" + character->GetName() + "story.png";
+        auto* story = new UIElement("story",path.c_str(),SDL_Rect{79,527,498,182});
         std::vector<UIElement*> temp = {&charOverview_KitDesc,story};
         charOverview_menus.push_back(temp);
     }
@@ -507,9 +507,9 @@ int main(int argc, char* argv[]) {
     UIElement preFight_charChooserBg("charChooserBg","./assets/UI/characterChooserBg.png",SDL_Rect{0,497,1920,583});
 
     std::vector<Button*> prefight_charOps;
-    for(int i = 0; i < characters.size(); i++) {
-        std::string name = characters.at(i)->GetName() + "Option";
-        std::string path = "./assets/charOverview/" + characters.at(i)->GetName() + ".png";
+    for(auto & character : characters) {
+        std::string name = character->GetName() + "Option";
+        std::string path = "./assets/charOverview/" + character->GetName() + ".png";
         prefight_charOps.push_back(new Button(name.c_str(),path.c_str(),SDL_Rect{0,753,258,254}));
     }
     EQPosUIElements(SDL_Rect{9,753,1900,318},prefight_charOps,true);
@@ -606,8 +606,8 @@ int main(int argc, char* argv[]) {
     postFight_materialTier1.GetTransform().scale = 0.3f;
     UIElement postFight_materialTier2("tier2Mat","./assets/UI/matTier2.png",SDL_Rect{477,489,211,398});
     postFight_materialTier2.GetTransform().scale = 0.2f;
-    //UIElement postFight_materialTier3("tier3Mat","./assets/UI/matTier3.png",SDL_Rect{650,497,211,398});
-    //postFight_materialTier3.GetTransform().scale = 0.15f;
+    UIElement postFight_materialTier3("tier3Mat","./assets/UI/matTier3.png",SDL_Rect{650,497,211,398});
+    postFight_materialTier3.GetTransform().scale = 0.15f;
 
     Text postFight_tier1Gained("tier1Gained","./assets/fonts/combat_main.ttf",SDL_Rect{331,500,211,398},"100",SDL_Color{255,255,255},50);
     Text postFight_tier2Gained("tier2Gained","./assets/fonts/combat_main.ttf",SDL_Rect{537,500,211,398},"100",SDL_Color{255,255,255},50);
@@ -624,7 +624,7 @@ int main(int argc, char* argv[]) {
     postFight.AddUIElement(&postFight_charAnim1);
     postFight.AddUIElement(&postFight_materialTier1);
     postFight.AddUIElement(&postFight_materialTier2);
-    //postFight.AddUIElement(&postFight_materialTier3);
+    postFight.AddUIElement(&postFight_materialTier3);
     postFight.AddUIElement(&postFight_tier1Gained);
     postFight.AddUIElement(&postFight_tier2Gained);
     postFight.AddUIElement(&postFight_tier3Gained);
@@ -710,7 +710,6 @@ int main(int argc, char* argv[]) {
         /// UPDATE
         ///
         bool running = true;
-        SDL_Event event;
         Uint32 lastTime = SDL_GetTicks(); // at the beginning
 
         ChangeScene(&startingScreen);
@@ -721,6 +720,7 @@ int main(int argc, char* argv[]) {
         SDL_RenderPresent(renderer);
 
         while (running && isStartingScreen) {
+            SDL_Event event;
             while (SDL_PollEvent(&event)) {
                 if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) {
                     running = false;
@@ -739,6 +739,7 @@ int main(int argc, char* argv[]) {
         ///(Sience it's turn based with minimal animations, not much will happen unless the user clicked or typed a kew)
         ///
         while (running) {
+            SDL_Event event;
             bool wasEvent = SDL_PollEvent(&event);
             if (wasEvent) {
                 if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) {

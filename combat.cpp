@@ -259,8 +259,8 @@ void Character::Skill(std::vector<Enemy*> targets,std::vector<Character*> allies
     skill(targets,allies,herself);
     std::cout << "Character skill hihi" << std::endl;
 }
-Dmg Character::Ult(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-    float multiplier = ult(std::move(targets),std::move(allies),herself);
+Dmg Character::Ult(std::vector<Enemy*>& targets,std::vector<Character*> allies, Character* herself) {
+    float multiplier = ult(targets,allies,herself);
     Dmg damageDealt = {currentAtk * multiplier,false,0};
 
     for(auto& enemy :targets) {

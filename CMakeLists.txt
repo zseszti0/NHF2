@@ -3,6 +3,15 @@ project(NHF2)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# Add these lines to enable Wall and Werror
+if(MSVC)
+    # MSVC compiler flags
+    add_compile_options(/W4 /WX)
+else()
+    # GCC/Clang compiler flags
+    add_compile_options(-Wall -Werror)
+endif()
+
 # SDL2 Path (Change this if you extracted SDL somewhere else)
 set(SDL2_DIR "C:/SDL2-2.32.2/x86_64-w64-mingw32")
 set(SDL2_IM_DIR "C:/SDL2_image-2.8.8/x86_64-w64-mingw32")

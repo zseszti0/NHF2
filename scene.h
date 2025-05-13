@@ -70,7 +70,7 @@ public:
     menus.push_back(menu);
   }
   void AddStates(const std::vector<Button*> &newTriggers, const std::vector<std::vector<UIElement*>>& newMenus) {
-    for(int i = 0; i < newTriggers.size(); i++) {
+    for(size_t i = 0; i < newTriggers.size(); i++) {
       AddState(newTriggers[i], newMenus[i]);
     }
   }
@@ -89,7 +89,7 @@ public:
     this->ChagneMenu(i);
   }
   int GetIndexByName(const std::string& name) {
-    for(int i = 0; i < triggers.size(); i++) {
+    for(size_t i = 0; i < triggers.size(); i++) {
       if(triggers.at(i)->GetName() == name)
         return i;
     }
@@ -241,9 +241,6 @@ public:
     ~Fight() override {
         SDL_DestroyTexture(bg);
 
-        for (auto enemy : enemies) {
-            //delete enemy;
-        }
         for (auto it = enemyHps.begin(); it != enemyHps.end(); ) {
                 delete *it;             // free the memory
                 it = enemyHps.erase(it);    // remove from vector safely

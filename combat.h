@@ -181,7 +181,7 @@ public:
 
     Dmg Normal(TypeMultiplier type, Enemy* target, int starsGot);
     void Skill(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself);
-    Dmg Ult(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself);
+    Dmg Ult(std::vector<Enemy*>& targets,std::vector<Character*> allies, Character* herself);
 
     double& GetStat(const char* t);
     bool IsAoe() override {
@@ -216,6 +216,11 @@ public:
 
         std::string spritePath = "./assets/sprites/" + name + ".png";
         sprite = new Sprite(name.c_str(),spritePath.c_str(),SDL_Rect{0,0,200,196});
+        SDL_Rect srcRes;
+        SDL_QueryTexture(sprite->GetTexture().get(),nullptr,nullptr,&srcRes.w,&srcRes.h);
+        sprite->GetTransform().position.w = srcRes.w;
+        sprite->GetTransform().position.h = srcRes.h;
+        sprite->GetTransform().scrRect = {0,0,srcRes.w,srcRes.h};
     }
 
     void ResetStats() override;

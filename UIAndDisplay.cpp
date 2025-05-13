@@ -23,7 +23,10 @@ UIElement::UIElement(const char* n, const char* texturePath, SDL_Rect rect) {
     if (!surface) {
         std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
     } else {
-        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        texture = std::shared_ptr<SDL_Texture>(
+            SDL_CreateTextureFromSurface(renderer, surface),
+            SDL_DestroyTexture  // Custom deleter
+        );
         SDL_FreeSurface(surface);
     }
 
@@ -34,11 +37,11 @@ void UIElement::Render() {
     if(isVisible) {
         transform.opacity = std::clamp(transform.opacity, 0.0f, 1.0f); // ensure it's in bounds
         int alpha = static_cast<int>(transform.opacity * 255.0f + 0.5f); // round to nearest int
-        SDL_SetTextureAlphaMod(texture, alpha);
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(texture.get(), alpha);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
         SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
-        SDL_RenderCopyEx(renderer,texture,&transform.scrRect,&scaledPos,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer,texture.get(),&transform.scrRect,&scaledPos,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
 }
 void UIElement::ScaleUp(float scaleFactor, float anchorX, float anchorY) {
@@ -130,32 +133,31 @@ void Button::AddBasicScaleUpHoverAnim(Button *target, float anchorX, float ancho
 
 
 size_t Sprite::NameToIndex(const char *name) {
-    size_t index = -1;
+    int index = 0;
     for (size_t i = 0; i < states.size(); i++) {
         if (stateNames[i] == name) {
             index = i;
             break;
         }
     }
-    if (index == -1) {
-        std::cerr << "No sprite state found as: " << name << std::endl;
-    }
     return index;
 }
 
-void Sprite::AddState(const char* newStateID,const char* newStatePath) {
-    //Load the texture of the element.
+void Sprite::AddState(const char* newStateID, const char* newStatePath) {
     SDL_Surface* surface = IMG_Load(newStatePath);
     if (!surface) {
         std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
     } else {
-        SDL_Texture* newState = SDL_CreateTextureFromSurface(renderer, surface);
+        auto newState = std::shared_ptr<SDL_Texture>(
+            SDL_CreateTextureFromSurface(renderer, surface),
+            SDL_DestroyTexture
+        );
         SDL_FreeSurface(surface);
-
         states.push_back(newState);
         stateNames.emplace_back(newStateID);
     }
 }
+
 void Sprite::ChangeState(const char* newState) {
     if(strcmp(newState,"base") == 0) {
         currentState = "base";
@@ -164,28 +166,22 @@ void Sprite::ChangeState(const char* newState) {
     }
     size_t index = this->NameToIndex(newState);
 
-    if (index < 0 || index >= states.size())
-        return;
-    if (index != -1) {
-        currentState = newState;
-        texture = states[index];
-    }
+    currentState = newState;
+    texture = states[index];
 }
-void Sprite::ChangeState(int index) {
+void Sprite::ChangeState(size_t index) {
     if (index < 0 || index >= states.size())
         return;
     currentState = stateNames[index];
     texture = states[index];
 }
-SDL_Texture* Sprite::GetTextureAt(const char *name) {
+
+std::shared_ptr<SDL_Texture> Sprite::GetTextureAt(const char *name) {
     if(strcmp(name,"base") == 0) {
         return states[0];
     }
     size_t index = this->NameToIndex(name);
-    if (index != -1) {
-        return states[index];
-    }
-    return nullptr;
+    return states[index];
 }
 
 
@@ -195,10 +191,10 @@ void SpriteButton::Render() {
 
         transform.opacity = std::clamp(transform.opacity, 0.0f, 1.0f); // ensure it's in bounds
         int alpha = static_cast<int>(transform.opacity * 255.0f + 0.5f); // round to nearest int
-        SDL_SetTextureAlphaMod(texture, alpha);
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(texture.get(), alpha);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderCopyEx(renderer,texture,&transform.scrRect,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer,texture.get(),&transform.scrRect,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
 }
 
@@ -216,21 +212,22 @@ Text::Text(const char* n, const char* fPath, SDL_Rect pos, const char* t, SDL_Co
 }
 void Text::Render() {
     if(isVisible) {
-        //needs this cos the text,size color etc. might have changed!!
-        SDL_Surface* textSurface = TTF_RenderText_Blended(font,text.c_str(),color);
-        SDL_DestroyTexture(texture);
-        texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-        SDL_FreeSurface(textSurface); // We don't need the surface anymore
+        SDL_Surface* textSurface = TTF_RenderText_Blended(font, text.c_str(), color);
+        texture = std::shared_ptr<SDL_Texture>(
+            SDL_CreateTextureFromSurface(renderer, textSurface),
+            SDL_DestroyTexture
+        );
+        SDL_FreeSurface(textSurface);
 
         //need this cos we dont know the length and height of the text.
-        SDL_QueryTexture(texture, nullptr, nullptr, &transform.position.w, &transform.position.h);
+        SDL_QueryTexture(texture.get(), nullptr, nullptr, &transform.position.w, &transform.position.h);
 
         transform.opacity = std::clamp(transform.opacity, 0.0f, 1.0f); // ensure it's in bounds
         int alpha = static_cast<int>(transform.opacity * 255.0f + 0.5f); // round to nearest int
-        SDL_SetTextureAlphaMod(texture, alpha);
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(texture.get(), alpha);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderCopyEx(renderer,texture,nullptr,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer,texture.get(),nullptr,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
 }
 
@@ -254,19 +251,25 @@ OutlinedText::OutlinedText(const char *n, const char *fPath, SDL_Rect pos, const
 
 void OutlinedText::Render() {
     if(isVisible) {
-        SDL_Surface* textSurface = TTF_RenderText_Blended(font,text.c_str(),color);
-        SDL_DestroyTexture(texture);
-        texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-        SDL_FreeSurface(textSurface); // We don't need the surface anymore
+        SDL_Surface* textSurface = TTF_RenderText_Blended(font, text.c_str(), color);
+        texture = std::shared_ptr<SDL_Texture>(
+            SDL_CreateTextureFromSurface(renderer, textSurface),
+            SDL_DestroyTexture
+        );
+        SDL_FreeSurface(textSurface);
 
         //need this cos we dont know the length and height of the text.
-        SDL_QueryTexture(texture, nullptr, nullptr, &transform.position.w, &transform.position.h);
+        SDL_QueryTexture(texture.get(), nullptr, nullptr, &transform.position.w, &transform.position.h);
 
 
-        SDL_Surface* outlineSurface = TTF_RenderText_Blended(outlineFont,text.c_str(),outlineColor);
-        SDL_DestroyTexture(outlineTexture);
-        outlineTexture = SDL_CreateTextureFromSurface(renderer, outlineSurface);
-        SDL_FreeSurface(outlineSurface); // We don't need the surface anymore
+
+        SDL_Surface* outlineSurface = TTF_RenderText_Blended(outlineFont, text.c_str(), outlineColor);
+        outlineTexture = std::shared_ptr<SDL_Texture>(
+            SDL_CreateTextureFromSurface(renderer, outlineSurface),
+            SDL_DestroyTexture
+        );
+        SDL_FreeSurface(outlineSurface);
+        
 
         SDL_Rect destRect = {
             transform.position.x,
@@ -279,13 +282,13 @@ void OutlinedText::Render() {
         transform.opacity = std::clamp(transform.opacity, 0.0f, 1.0f); // ensure it's in bounds
         int alpha = static_cast<int>(transform.opacity * 255.0f + 0.5f); // round to nearest int
 
-        SDL_SetTextureAlphaMod(outlineTexture, alpha);
-        SDL_SetTextureBlendMode(outlineTexture, SDL_BLENDMODE_BLEND);
-        SDL_SetTextureAlphaMod(texture, alpha);
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(outlineTexture.get(), alpha);
+        SDL_SetTextureBlendMode(outlineTexture.get(), SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(texture.get(), alpha);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderCopyEx(renderer,outlineTexture,nullptr,&destRect,transform.rotation,nullptr,SDL_FLIP_NONE);
-        SDL_RenderCopyEx(renderer, texture, nullptr, &transform.position, transform.rotation, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer,outlineTexture.get(),nullptr,&destRect,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, texture.get(), nullptr, &transform.position, transform.rotation, nullptr, SDL_FLIP_NONE);
 
     }
 }
@@ -334,36 +337,39 @@ void Bar::Render() {
 
         transform.opacity = std::clamp(transform.opacity, 0.0f, 1.0f); // ensure it's in bounds
         int alpha = static_cast<int>(transform.opacity * 255.0f + 0.5f); // round to nearest int
-        SDL_SetTextureAlphaMod(texture, alpha);
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopyEx(renderer,texture,nullptr,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_SetTextureAlphaMod(texture.get(), alpha);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyEx(renderer,texture.get(),nullptr,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
 
-        SDL_SetTextureAlphaMod(barTexture, alpha);
-        SDL_SetTextureBlendMode(barTexture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopyEx(renderer,barTexture,&transform.scrRect,&barPos,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_SetTextureAlphaMod(barTexture.get(), alpha);
+        SDL_SetTextureBlendMode(barTexture.get(), SDL_BLENDMODE_BLEND);
+        SDL_RenderCopyEx(renderer,barTexture.get(),&transform.scrRect,&barPos,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
 }
 
 void TextButton::Render() {
     if(isVisible) {
-        SDL_Surface* textSurface = TTF_RenderText_Blended(font,text.c_str(),color);
-        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-        SDL_FreeSurface(textSurface); // We don't need the surface anymore
+        SDL_Surface* textSurface = TTF_RenderText_Blended(font, text.c_str(), color);
+        textTexture = std::shared_ptr<SDL_Texture>(
+            SDL_CreateTextureFromSurface(renderer, textSurface),
+            SDL_DestroyTexture
+        );
+        SDL_FreeSurface(textSurface);
 
         //need this cos we dont know the length and height of the text.
-        SDL_QueryTexture(textTexture, nullptr, nullptr, &textRect.w, &textRect.h);
+        SDL_QueryTexture(textTexture.get(), nullptr, nullptr, &textRect.w, &textRect.h);
         textRect.x = transform.position.x + (transform.position.w - textRect.w) / 2;
         textRect.y = transform.position.y + (transform.position.h - textRect.h) / 2;
 
         transform.opacity = std::clamp(transform.opacity, 0.0f, 1.0f); // ensure it's in bounds
         int alpha = static_cast<int>(transform.opacity * 255.0f + 0.5f); // round to nearest int
-        SDL_SetTextureAlphaMod(texture, alpha);
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-        SDL_SetTextureAlphaMod(textTexture, alpha);
-        SDL_SetTextureBlendMode(textTexture, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(texture.get(), alpha);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+        SDL_SetTextureAlphaMod(textTexture.get(), alpha);
+        SDL_SetTextureBlendMode(textTexture.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderCopyEx(renderer, texture, nullptr, &transform.position, transform.rotation, nullptr, SDL_FLIP_NONE);
-        SDL_RenderCopyEx(renderer, textTexture, nullptr, &textRect, transform.rotation, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, texture.get(), nullptr, &transform.position, transform.rotation, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, textTexture.get(), nullptr, &textRect, transform.rotation, nullptr, SDL_FLIP_NONE);
 
     }
 }
@@ -399,7 +405,6 @@ void EQPosUIElements(SDL_Rect area, std::vector<UIElement *> &elements, bool hor
         int xSoFar = area.x;
         for(auto& element : elements) {
             element->GetTransform().position.x = xSoFar;
-            int x = element->GetTransform().position.x;
             xSoFar += element->GetTransform().position.w + margin;
         }
     }
@@ -434,7 +439,6 @@ void EQPosUIElements(SDL_Rect area, std::vector<Button*> &elements, bool horizon
         int xSoFar = area.x;
         for(auto& element : elements) {
             element->GetTransform().position.x = xSoFar;
-            int x = element->GetTransform().position.x;
             xSoFar += element->GetTransform().position.w + margin;
         }
     }

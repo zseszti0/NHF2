@@ -51,7 +51,7 @@ struct Transform {
 class UIElement {
 protected:
   std::string name;
-  SDL_Texture* texture;
+  std::shared_ptr<SDL_Texture> texture;
 
 
   Animation* animation = nullptr;
@@ -64,14 +64,14 @@ public:
   UIElement(const char* n = "empty", const char* texturePath = "./assets/UI/empty.jpg", SDL_Rect rect = {0,0,0,0});
 
   virtual void Render();
-  std::string GetName(){return name;}
-  SDL_Texture* GetTexture(){return texture;}
-  void SetTexture(SDL_Texture* t) {
-    //SDL_DestroyTexture(texture);
+  std::shared_ptr<SDL_Texture> GetTexture() { return texture; }
+
+  void SetTexture(std::shared_ptr<SDL_Texture> t) {
     texture = t;
   }
   Transform& GetTransform(){return transform;}
   void SetTransform(Transform t){transform = t;}
+  std::string GetName(){return name;}
 
   bool IsVisible(){return isVisible;}
   void SetVisible(bool v){isVisible = v;}
@@ -79,10 +79,10 @@ public:
   void ScaleUp(float scaleFactor, float anchorX = 0.0f, float anchorY = 0.0f);
   void Rotate(int degrees);
   virtual void Tint(SDL_Color tint) {
-    SDL_SetTextureColorMod(texture, tint.r, tint.g, tint.b);
+    SDL_SetTextureColorMod(texture.get(), tint.r, tint.g, tint.b);
   }
   void UnTint() {
-    SDL_SetTextureColorMod(texture, 255, 255, 255);
+    SDL_SetTextureColorMod(texture.get(), 255, 255, 255);
   }
 
   void AddTweeny(Transform result, int duration, Transform afterState, AnimEasing easing = LIN);
@@ -91,10 +91,6 @@ public:
 
 
   virtual ~UIElement() {
-    if (texture != nullptr) {
-      SDL_DestroyTexture(texture);
-      texture = nullptr;
-    }
     std::cout << "UIelement: " << name << " dtor" <<std::endl;
   }
 
@@ -128,28 +124,19 @@ public:
 
 
   ~Button() override {
-    if (texture != nullptr) {
-      SDL_DestroyTexture(texture);
-      texture = nullptr;
-    }
     std::cout << "Button dtor" << std::endl;
   }
 };
 ///Sprites with one layer of changing element. Can switch between states, given its name.
 class Sprite : virtual public UIElement {
 protected:
-  std::vector<SDL_Texture*> states;
+  std::vector<std::shared_ptr<SDL_Texture>> states;
   std::vector<std::string> stateNames;
 
   size_t NameToIndex(const char* name);
   std::string currentState;
 public:
 
-  Sprite() {
-    name = "empty";
-    texture = nullptr;
-    transform.position = {0,0,0,0};
-  }
   Sprite(const char* n, const char* texturePath,SDL_Rect pos) : UIElement(n, texturePath, pos) {
     states.push_back(texture);
     stateNames.push_back(name);
@@ -158,11 +145,12 @@ public:
 
   void AddState(const char* newStateID,const char* newStatePath);
   void ChangeState(const char* newState);
-  void ChangeState(int index);
+  void ChangeState(size_t index);
 
 
-  SDL_Texture* GetTextureAt(int index){return states.at(index);}
-  SDL_Texture* GetTextureAt(const char* name);
+  std::shared_ptr<SDL_Texture> GetTextureAt(int index) { return states.at(index); }
+  std::shared_ptr<SDL_Texture> GetTextureAt(const char* name);
+
 
   int GetNumberOfStates(){return states.size();}
 
@@ -170,13 +158,6 @@ public:
   int GetCurrentStateIndex(){return NameToIndex(currentState.c_str());}
 
   ~Sprite() override {
-    for (auto state : states) {
-      if (state != nullptr) {
-        SDL_DestroyTexture(state);
-        state = nullptr;
-      }
-    }
-
     std::cout << "Sprite dtor" << std::endl;
   }
 };
@@ -200,17 +181,13 @@ public:
   void Render() override;
 
   ~Text() override {
-    if (texture != nullptr) {
-      SDL_DestroyTexture(texture);
-      texture = nullptr;
-    }
     TTF_CloseFont(font);
   }
 };
 class OutlinedText : public Text {
   SDL_Color outlineColor{};
   TTF_Font* outlineFont;
-  SDL_Texture* outlineTexture{};
+  std::shared_ptr<SDL_Texture> outlineTexture;
   int outlineSize;
 
 public:
@@ -220,10 +197,6 @@ public:
 
   void Render() override;
   ~OutlinedText() override {
-    if (outlineTexture != nullptr) {
-      SDL_DestroyTexture(outlineTexture);
-      outlineTexture = nullptr;
-    }
     TTF_CloseFont(outlineFont);
   }
 };
@@ -233,7 +206,7 @@ class Bar : public UIElement {
   double maxValue = 0;
   double* currentValue = nullptr;
 
-  SDL_Texture* barTexture;
+  std::shared_ptr<SDL_Texture> barTexture;
   SDL_Rect barPos{};
 
   bool dir; //true = horizontal, false = vertical
@@ -243,14 +216,17 @@ public:
     if (!surface) {
       std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
     } else {
-      barTexture = SDL_CreateTextureFromSurface(renderer, surface);
+      barTexture = std::shared_ptr<SDL_Texture>(
+          SDL_CreateTextureFromSurface(renderer, surface),
+          SDL_DestroyTexture
+      );
       SDL_FreeSurface(surface);
     }
+
     barPos = rect;
 
     maxValue = maxv;
     currentValue = currentV;
-
     dir = d;
   }
   void SetCur(double* cur){currentValue = cur;}
@@ -259,18 +235,10 @@ public:
   void UpdateBar();
   void Render() override;
   void Tint(SDL_Color tint) override {
-    SDL_SetTextureColorMod(barTexture, tint.r, tint.g, tint.b);
+    SDL_SetTextureColorMod(barTexture.get(), tint.r, tint.g, tint.b);
   }
 
   ~Bar() override {
-    if (texture != nullptr) {
-      SDL_DestroyTexture(texture);
-      texture = nullptr;
-    }
-    if (barTexture != nullptr) {
-      SDL_DestroyTexture(barTexture);
-      barTexture = nullptr;
-    }
     std::cout << "Bar dtor" << std::endl;
   }
 };
@@ -283,7 +251,7 @@ public:
   void Render() override;
 };
 class TextButton : public Text, public Button {
-  SDL_Texture* textTexture{};
+  std::shared_ptr<SDL_Texture> textTexture;
   SDL_Rect textRect{};
 public:
   TextButton(const char* n, const char* texturePath,SDL_Rect rect,std::function<void()> func,

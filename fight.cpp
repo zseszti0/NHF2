@@ -54,7 +54,6 @@ void Fight::UpdateTweens(float dt) {
 
 void Fight::AddEnemy(Enemy* e) {
     enemies.push_back(e);
-    SDL_Rect barPos = e->GetSprite()->GetTransform().position;
 
     Bar* enemyHp = new Bar("enemyHp","./assets/combat/enemyHpBg.png","./assets/combat/enemyHp.png",SDL_Rect{0,0},e->GetStat("maxhp"),&e->GetStat("hp"));
     enemyHps.push_back(enemyHp);
@@ -151,10 +150,10 @@ void Fight::ConfigureStartingState(){
 
 void Fight::InitAnimPropsStartingState() {
     for(int i = 0; i < 3; i++) {
-        SDL_Texture* skillText = characters.at(i)->GetSprite()->GetTextureAt("base");
+        std::shared_ptr<SDL_Texture> skillText = characters.at(i)->GetSprite()->GetTextureAt("base");
         animProps.at(i)->SetTexture(skillText);
 
-        SDL_Texture* ultText = characters.at(i)->GetSprite()->GetTextureAt("splash");
+        std::shared_ptr<SDL_Texture> ultText = characters.at(i)->GetSprite()->GetTextureAt("splash");
         animProps.at(3+i)->SetTexture(ultText);
     }
     for (auto& element : uiBoundle) {
@@ -539,7 +538,7 @@ GameMats Fight::MaterialsEarned() {
 void Fight::ChangeEnemyTarget(int dir) {
     currentEnemyTarget += dir;
     if(currentEnemyTarget == -1) currentEnemyTarget = enemies.size() - 1;
-    else if(currentEnemyTarget >= enemies.size()) currentEnemyTarget = 0;
+    else if(currentEnemyTarget >= (int)enemies.size()) currentEnemyTarget = 0;
 
     this->PositionTarget(currentEnemyTarget);
 
@@ -660,7 +659,7 @@ void Fight::ScaleCharacterCont(bool up, Character* ch) {
         combatChConts.at(n).at(4)->GetTransform().position = {xpos+78,770,298,241};
 
         std::vector<UIElement*> buffIcons = characters.at(n)->GetBuffIcons();
-        for(int i = 0; i < buffIcons.size(); i++) {
+        for(size_t i = 0; i < buffIcons.size(); i++) {
             int x = characters.at(n)->GetSprite()->GetTransform().position.x+200 + i*29;
             buffIcons.at(i)->GetTransform().position = SDL_Rect{x,762,25,23};
         }
@@ -681,7 +680,7 @@ void Fight::ScaleCharacterCont(bool up, Character* ch) {
         combatChConts.at(n).at(4)->GetTransform().position = {xpos+65,845,244,198};
 
         std::vector<UIElement*> buffIcons = characters.at(n)->GetBuffIcons();
-        for(int i = 0; i < buffIcons.size(); i++) {
+        for(size_t i = 0; i < buffIcons.size(); i++) {
             int x = characters.at(n)->GetSprite()->GetTransform().position.x+165 + i*24;
             buffIcons.at(i)->GetTransform().position = SDL_Rect{x,835,20,19};
         }
@@ -733,7 +732,7 @@ void Fight::SetSkillNeedsTarget(bool isVisible) {
 
 void Fight::ChangeTurnOrderCont() {
     for(int i = 0; i < 5; i++) {
-        SDL_Texture* thumb = turnOrderFIFO.at(i)->GetSprite()->GetTextureAt("turnThumb");
+        std::shared_ptr<SDL_Texture> thumb = turnOrderFIFO.at(i)->GetSprite()->GetTextureAt("turnThumb");
         turnOrderCont.at(i)->SetTexture(thumb);
     }
 }

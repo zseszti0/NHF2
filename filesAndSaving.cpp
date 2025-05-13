@@ -135,7 +135,7 @@ void UpdateProfileData(Game* profile) {
     {
         const char* profileFileName = "./savFiles/profile.txt";
         std::ifstream inFile(profileFileName);
-        
+
         if (!inFile) {
             std::cerr << "Error: Unable to open profile.txt for reading.\n";
             return;
@@ -163,7 +163,7 @@ void UpdateProfileData(Game* profile) {
                 << profile->GetMats().tier1 << " "
                 << profile->GetMats().tier2 << " "
                 << profile->GetMats().tier3 << " ";
-        
+
         for (int i = 0; i < 4; ++i) {
             outFile << std::boolalpha << tutorials[i] << (i < 3 ? " " : "");
         }
