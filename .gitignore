@@ -1,0 +1,6 @@
+.idea/
+
+cmake-build-debug/
+
+!cmake-buld-debug/assets/
+!cmake-buld-debug/savFiles/

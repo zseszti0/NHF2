@@ -1,0 +1,6 @@
+trialRun 0 false
+snail 5
+fly 5
+squid 10
+fly 5
+snail 5

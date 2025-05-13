@@ -1,0 +1,4 @@
+trialRun 0 false
+rabbit 15
+rabbit 15
+rabbit 15

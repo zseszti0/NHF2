@@ -1,0 +1,4 @@
+trialRun 0 false
+totem 30
+paladin 50
+totem 30
