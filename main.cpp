@@ -75,8 +75,8 @@ int main(int argc, char* argv[]) {
         [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
 std::cout << "EPHYXAME SKILLED :3" <<std::endl << std::endl;
-herself->GetBuff({"atk",herself->GetStat("atk")*0.2,3});
-herself->GetBuff({"critDmg",0.3,3});
+herself->GetBuff({"atk",herself->GetStat("atk")*0.2,4});
+herself->GetBuff({"critDmg",0.3,4});
 herself->GetBuff({"energy",20,0});
 
 }
@@ -89,10 +89,10 @@ herself->GetBuff({"energy",20,0});
         [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 std::cout << "VELYCTISKA SKILLED :3" <<std::endl << std::endl;
 
-herself->GetBuff({"starAbsorbA",0.3,3});
+herself->GetBuff({"starAbsorbA",0.5,4});
 herself->GetBuff({"energy",35,0});
 
-herself->GetBuff({"hp",-2000,0});
+herself->GetBuff({"hp",-1000,0});
 
 for(auto& ally : allies) {
 ally->GetBuff({"energy",15,0});
@@ -101,20 +101,21 @@ ally->GetBuff({"energy",15,0});
     ,5,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
         std::cout << "VALYTISKA ULTED :3" <<std::endl << std::endl;
+        herself->GetBuff({"hp",-3000,0});
 
-        herself->GetBuff({"atk",herself->GetStat("atk")*0.4,1});
-        return 4.0f;
+        herself->GetBuff({"atk",herself->GetStat("atk")*0.4,2});
+        return 12.0f;
     });
     characters.at(2)->AddSkillAndUlt( {
         [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-herself->GetBuff({"starGen",4,3});
-herself->GetBuff({"critDmg",1,3});
+herself->GetBuff({"starGen",4,4});
+herself->GetBuff({"critDmg",1,4});
 
 }
     ,2,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
-        herself->GetBuff({"starAbsorbQ",0.5,3});
-        herself->GetBuff({"critDmg",1,1});
+        herself->GetBuff({"starAbsorbQ",0.5,4});
+        herself->GetBuff({"critDmg",1,2});
 
         for(auto& enemy:targets) {
             enemy->GetBuff({"def",enemy->GetStat("basedef")*0.15,1});
@@ -125,9 +126,12 @@ herself->GetBuff({"critDmg",1,3});
         [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 std::cout << "CALLEOPE SKILLED :3" <<std::endl << std::endl;
 
-herself->GetBuff({"atk",herself->GetStat("atk")*0.3,3});
-herself->GetBuff({"critDmg",0.3,3});
-herself->GetBuff({"ER",10,1});
+herself->GetBuff({"atk",herself->GetStat("atk")*0.3,4});
+herself->GetBuff({"critDmg",0.3,4});
+            for(auto& ally : allies) {
+                ally->GetBuff({"ER",15,2});
+            }
+            herself->GetBuff({"speed",30,6});
 
 }
     ,5,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
@@ -138,31 +142,31 @@ herself->GetBuff({"ER",10,1});
     characters.at(4)->AddSkillAndUlt({[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
         std::cout << "BUSTER SUPP SKILLED :3" <<std::endl << std::endl;
 
-        herself->GetBuff({"critDmg",1,1});
-        herself->GetBuff({"starAbsorbB",0.5,3});
-        herself->GetBuff({"speed",20,3});
+        herself->GetBuff({"critDmg",1,2});
+        herself->GetBuff({"starAbsorbB",0.5,4});
+        herself->GetBuff({"speed",20,4});
     },3,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
         std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
         for(auto& ally : allies) {
-            ally->GetBuff({"atk",ally->GetStat("atk")*0.2,1});
-            ally->GetBuff({"hp",1000,3});
-            ally->GetBuff({"starGen",3,3});
+            ally->GetBuff({"atk",ally->GetStat("atk")*0.2,2});
+            ally->GetBuff({"hp",1000,4});
+            ally->GetBuff({"starGen",3,4});
         }
         return 0.0f;
     });
     characters.at(5)->AddSkillAndUlt({[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
         std::cout << "EMA SKILLED :3" <<std::endl << std::endl;
 
-        herself->GetBuff({"atk",herself->GetStat("atk")*0.2,3});
-        herself->GetBuff({"critDmg",0.2,3});
-        herself->GetBuff({"starAbsorbA",herself->GetStat("starAbsorbA")*0.3,3});
+        herself->GetBuff({"atk",herself->GetStat("atk")*0.2,6});
+        herself->GetBuff({"critDmg",0.2,6});
+        herself->GetBuff({"starAbsorbA",herself->GetStat("starAbsorbA")*0.3,6});
 
         for(auto& ally : allies) {
-            ally->GetBuff({"ER",ally->GetStat("ER")*0.3,3});
-            ally->GetBuff({"energy",20,0});
+            ally->GetBuff({"ER",ally->GetStat("ER")*0.3,4});
+            ally->GetBuff({"energy",30,0});
         }
-    },6,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+    },4,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
         std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
         herself->GetBuff({"atk",herself->GetStat("atk")*0.2,3});
@@ -170,14 +174,14 @@ herself->GetBuff({"ER",10,1});
         return 4.0f;
     });
     characters.at(6)->AddSkillAndUlt({[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-        herself->GetBuff({"starAbsorbQ",0.3,3});
+        herself->GetBuff({"starAbsorbQ",0.8,4});
         herself->GetBuff({"energy",60,0});
-        herself->GetBuff({"starGen",5,3});
+        herself->GetBuff({"starGen",5,4});
     },5,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
     std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
         for(auto& ally : allies) {
-            ally->GetBuff({"ER",ally->GetStat("ER")*0.3,3});
+            ally->GetBuff({"ER",ally->GetStat("ER")*0.3,4});
             ally->GetBuff({"energy",20,0});
         }
         for(auto& enemy: targets) {
@@ -463,16 +467,26 @@ herself->GetBuff({"energy",10,0});
     TextButton charOverview_LvlUp("lvlUp","./assets/UI/tutorialsButtonBg.png",SDL_Rect{67,434,340,50},[&charOverview]{charOverview.Level();},"./assets/fonts/combat_main.ttf","Ascend");
     Button::AddBasicScaleUpHoverAnim(&charOverview_LvlUp);
 
-    Button charOverview_Skill("skill","./assets/charOverview/skill.png",SDL_Rect{1479,162,195,184});
-    Button charOverview_Ult("ult","./assets/charOverview/ult.png",SDL_Rect{1703,104,194,188});
-
     UIElement charOverview_KitDesc("kitDesc","./assets/charOverview/kitDesc.png",SDL_Rect{1483,270,413,383});
 
     std::vector<std::vector<UIElement*>> charOverview_menus;
     for (auto & character : characters) {
         std::string path = "./assets/charOverview/" + character->GetName() + "story.png";
         auto* story = new UIElement("story",path.c_str(),SDL_Rect{79,527,498,182});
-        std::vector<UIElement*> temp = {&charOverview_KitDesc,story};
+
+        path = "./assets/charOverview/" + character->GetName() + "skill.png";
+        auto* kit = new Sprite("kit",path.c_str(),SDL_Rect{1523,429,318,153});
+
+        Button* skillButton = new Button("skill","./assets/charOverview/skill.png",SDL_Rect{1479,162,195,184},[kit] {
+            kit->ChangeState("base");
+        });
+        Button* ultButton = new Button("ult","./assets/charOverview/ult.png",SDL_Rect{1703,104,194,188},[kit] {
+            kit->ChangeState("ult");
+        });
+
+        path = "./assets/charOverview/" + character->GetName() + "ult.png";
+        kit->AddState("ult",path.c_str());
+        std::vector<UIElement*> temp = {kit,story,skillButton,ultButton};
         charOverview_menus.push_back(temp);
     }
 
@@ -484,6 +498,7 @@ herself->GetBuff({"energy",10,0});
         Button::AddBasicScaleUpHoverAnim(button,0.5f,1.0f,1.15f);
     }
 
+    charOverview.AddUIElement(&charOverview_KitDesc);
     charOverview.AddUIElement(&charOverview_nameFrame);
     charOverview.AddUIElement(&charOverview_level);
     charOverview.AddUIElement(&charOverview_LvlUp);
@@ -493,8 +508,6 @@ herself->GetBuff({"energy",10,0});
     charOverview.AddUIElement(&charOverview_matTier1Text);
     charOverview.AddUIElement(&charOverview_matTier2Text);
     charOverview.AddUIElement(&charOverview_matTier3Text);
-    charOverview.AddUIElement(&charOverview_Skill);
-    charOverview.AddUIElement(&charOverview_Ult);
     charOverview.AddUIElement(&closeMenu);
 
 
@@ -915,8 +928,11 @@ herself->GetBuff({"energy",10,0});
         delete *it;
         it = charOverview_ops.erase(it);
     }
-    for (auto& element:charOverview_menus) {
-        delete element.at(1);
+    for (auto& menu:charOverview_menus) {
+        for (auto it = menu.begin(); it != menu.end(); ) {
+            delete *it;
+            it = menu.erase(it);
+        }
     }
     delete MMTutorial;
     delete COTutorial;
