@@ -497,8 +497,7 @@ herself->GetBuff({"energy",10,0});
     charOverview.AddStates(charOverview_ops,charOverview_menus);
     charOverview.AddStatTextsCont(charOverview_statTexts);
     charOverview.EQPositionTriggers(SDL_Rect{9,753,1900,318},true);
-
-    for(auto& button : charOverview_ops) {
+    for (auto& button : charOverview_ops) {
         Button::AddBasicScaleUpHoverAnim(button,0.5f,1.0f,1.15f);
     }
 

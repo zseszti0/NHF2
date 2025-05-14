@@ -368,22 +368,25 @@ void CharOverview::UpdateLevelText() {
 
 
 void PreFight::CheckButtonsOnClick(int mouseX, int mouseY) {
-    for(auto element : uiBoundle) {
-        auto button = dynamic_cast<Button*>(element);
-        if (button) {
-            if (button->HandleClick(mouseX, mouseY) && button->GetName() == "startCombat") {
-                this->StartFight();
-            }
-        }
-    }
-
+    bool wasCharSelect = false;
     for (size_t i = 0; i < Game::characters.size(); i++) {
         auto button = dynamic_cast<Button*>(Game::preFightCharChoosers.at(i+1));
         if (button) {
             if (button->HandleClick(mouseX, mouseY)) {
+                wasCharSelect = true;
                 bool didSmth = this->AddCharacter(Game::characters.at(i));
                 if(Game::preFightCharChoosers.at(i+1)->GetTransform().scale == 1.0f){Game::preFightCharChoosers.at(i+1)->GetTransform().scale = 0.8f;}
                 else if(didSmth){Game::preFightCharChoosers.at(i+1)->GetTransform().scale = 1.0f;}
+            }
+        }
+    }
+    if (!wasCharSelect) {
+        for(auto element : uiBoundle) {
+            auto button = dynamic_cast<Button*>(element);
+            if (button) {
+                if (button->HandleClick(mouseX, mouseY) && button->GetName() == "startCombat") {
+                    this->StartFight();
+                }
             }
         }
     }
