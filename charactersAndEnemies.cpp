@@ -127,6 +127,16 @@ void Character::ResetStats(){
     isCurrentlyAoe = isAoe;
 
     skill.activeCooldown = 0;
+
+    isDead = false;
+
+    if (buffIcons.empty())  return;
+    for (auto it = buffIcons.begin(); it != buffIcons.end(); ) {
+        delete *it;
+        it = buffIcons.erase(it);
+    }
+    buffIcons.clear();
+    buffs.clear();
 }
 void Character::GetBuff(Buff buff) {
     if(buff.type == "atk"){

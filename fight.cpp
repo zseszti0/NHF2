@@ -104,7 +104,6 @@ void Fight::ConfigureStartingState(){
         ch->ResetStats();
         fieldMobs.push_back(ch);
         ch->GetSprite()->SetVisible(true);
-        ch->SetIsDead(false);
         ch->GetSprite()->UnTint();
     }
 
