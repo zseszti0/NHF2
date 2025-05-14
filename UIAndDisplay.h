@@ -90,10 +90,7 @@ public:
   void UpdateTweens(float dt);
 
 
-  virtual ~UIElement() {
-    std::cout << "UIelement: " << name << " dtor" <<std::endl;
-  }
-
+  virtual ~UIElement() = default;
 };
 ///Trivial usecase. Works with costum callBack functions to suit each buttons need.
 class Button : virtual public UIElement {
@@ -249,6 +246,9 @@ public:
       :UIElement(n,path,rect), Sprite(n,path,rect), Button(n,path,rect,std::move(func)) {}
 
   void Render() override;
+  ~SpriteButton() override {
+    std::cout << "SpriteButton dtor" << std::endl;
+  }
 };
 class TextButton : public Text, public Button {
   std::shared_ptr<SDL_Texture> textTexture;
@@ -264,6 +264,8 @@ public:
   }
 
   void Render() override;
+
+ ~TextButton() override {}
 };
 
 

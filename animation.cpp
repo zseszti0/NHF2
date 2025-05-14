@@ -19,7 +19,7 @@ void CombatSkillAnim(UIElement* target) {
     t.opacity = 1.0f;
     target->AddTweeny(t,1500,target->GetTransform(),OUT);
 }
-void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> winners, GameMats matsgot) {
+void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> winners, GameMats matsgot, FightNodeStars starsGot) {
     for (auto& e : elements) {
         if (e->GetName() == "char1") {
             e->SetTexture(winners.at(0)->GetSprite()->GetTextureAt("base"));
@@ -87,6 +87,18 @@ void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> wi
             t.position.x += 100;
             t.opacity = 1.0f;
             e->AddTweeny(t,2000,t,OUT);
+        }
+        else if (e->GetName() == "lessthan5") {
+            auto star = dynamic_cast<Sprite*>(e);
+            star->ChangeState(starsGot.lessThan5 ? "got" : "base");
+        }
+        else if (e->GetName() == "noDeaths") {
+            auto star = dynamic_cast<Sprite*>(e);
+            star->ChangeState(starsGot.noDeaths ? "got" : "base");
+        }
+        else if (e->GetName() == "lessthan10") {
+            auto star = dynamic_cast<Sprite*>(e);
+            star->ChangeState(starsGot.lessThan10 ? "got" : "base");
         }
     }
 }

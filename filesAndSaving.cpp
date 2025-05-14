@@ -1,6 +1,6 @@
 #include "filesAndSaving.h"
 
-#include "combat.h"
+#include "charactersAndEnemies.h"
 
 std::vector<Character*> LoadCharactersFromFile(const char* filename) {
     std::ifstream file(filename);

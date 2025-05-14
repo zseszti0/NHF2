@@ -31,7 +31,7 @@ link_directories(${SDL2_TTF_DIR}/lib)
 add_executable(NHF2 main.cpp
         UIAndDisplay.h
         UIAndDisplay.cpp
-        combat.cpp
+        charactersAndEnemies.cpp
         fight.cpp
         animation.cpp
         scene.cpp

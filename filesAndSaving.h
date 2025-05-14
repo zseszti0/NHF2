@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "gameEngine.h"
-#include "combat.h"
+#include "charactersAndEnemies.h"
 
 std::vector<Character*> LoadCharactersFromFile(const char* filename);
 Enemy* LoadEnemyFromFile(const char* filename);

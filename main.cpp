@@ -9,7 +9,7 @@
 
 //MY HEADERS
 #include "UIAndDisplay.h"
-#include "combat.h"
+#include "charactersAndEnemies.h"
 #include "scene.h"
 #include "filesAndSaving.h"
 #include "gameEngine.h"
@@ -71,41 +71,47 @@ int main(int argc, char* argv[]) {
     ///
     std::vector<Character*> characters = LoadCharactersFromFile("./savFiles/characters.txt");
     std::cout << "characters created" <<std:: endl;
-    characters.at(0)->AddSkillAndUlt([](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+    characters.at(0)->AddSkillAndUlt( {
+        [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
-            std::cout << "EPHYXAME SKILLED :3" <<std::endl << std::endl;
-            herself->GetBuff({"atk",herself->GetStat("atk")*0.2,3});
-            herself->GetBuff({"critDmg",0.3,3});
-            herself->GetBuff({"energy",20,0});
+std::cout << "EPHYXAME SKILLED :3" <<std::endl << std::endl;
+herself->GetBuff({"atk",herself->GetStat("atk")*0.2,3});
+herself->GetBuff({"critDmg",0.3,3});
+herself->GetBuff({"energy",20,0});
 
-    },[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself){
+}
+    ,2,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself){
 
         std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
-        return 3.0f;
+        return 6.0f;
     });
-    characters.at(1)->AddSkillAndUlt([](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-            std::cout << "VELYCTISKA SKILLED :3" <<std::endl << std::endl;
+    characters.at(1)->AddSkillAndUlt( {
+        [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+std::cout << "VELYCTISKA SKILLED :3" <<std::endl << std::endl;
 
-            herself->GetBuff({"starAbsorbA",0.3,3});
-            herself->GetBuff({"energy",35,0});
+herself->GetBuff({"starAbsorbA",0.3,3});
+herself->GetBuff({"energy",35,0});
 
-            herself->GetBuff({"hp",-2000,0});
+herself->GetBuff({"hp",-2000,0});
 
-            for(auto& ally : allies) {
-                ally->GetBuff({"energy",15,0});
-            }
-    },[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+for(auto& ally : allies) {
+ally->GetBuff({"energy",15,0});
+}
+}
+    ,5,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
         std::cout << "VALYTISKA ULTED :3" <<std::endl << std::endl;
 
         herself->GetBuff({"atk",herself->GetStat("atk")*0.4,1});
-        return 2.0f;
+        return 4.0f;
     });
-    characters.at(2)->AddSkillAndUlt([](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-            herself->GetBuff({"starGen",4,3});
-            herself->GetBuff({"critDmg",1,3});
+    characters.at(2)->AddSkillAndUlt( {
+        [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+herself->GetBuff({"starGen",4,3});
+herself->GetBuff({"critDmg",1,3});
 
-    },[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+}
+    ,2,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
         herself->GetBuff({"starAbsorbQ",0.5,3});
         herself->GetBuff({"critDmg",1,1});
@@ -113,28 +119,29 @@ int main(int argc, char* argv[]) {
         for(auto& enemy:targets) {
             enemy->GetBuff({"def",enemy->GetStat("basedef")*0.15,1});
         }
-        return 1.5f;
+        return 3.5f;
     });
-    characters.at(3)->AddSkillAndUlt([](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-            std::cout << "CALLEOPE SKILLED :3" <<std::endl << std::endl;
+    characters.at(3)->AddSkillAndUlt( {
+        [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+std::cout << "CALLEOPE SKILLED :3" <<std::endl << std::endl;
 
-            herself->GetBuff({"atk",herself->GetStat("atk")*0.3,3});
-            herself->GetBuff({"critDmg",0.3,3});
-            herself->GetBuff({"ER",10,1});
+herself->GetBuff({"atk",herself->GetStat("atk")*0.3,3});
+herself->GetBuff({"critDmg",0.3,3});
+herself->GetBuff({"ER",10,1});
 
-    },[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+}
+    ,5,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
         std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
-        return 2.5f;
+        return 5.0f;
     });
-    characters.at(4)->AddSkillAndUlt([](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-            std::cout << "BUSTER SUPP SKILLED :3" <<std::endl << std::endl;
+    characters.at(4)->AddSkillAndUlt({[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+        std::cout << "BUSTER SUPP SKILLED :3" <<std::endl << std::endl;
 
-            herself->GetBuff({"critDmg",1,1});
-            herself->GetBuff({"starAbsorbB",0.5,3});
-            herself->GetBuff({"speed",20,3});
-
-    },[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+        herself->GetBuff({"critDmg",1,1});
+        herself->GetBuff({"starAbsorbB",0.5,3});
+        herself->GetBuff({"speed",20,3});
+    },3,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
         std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
         for(auto& ally : allies) {
@@ -144,30 +151,29 @@ int main(int argc, char* argv[]) {
         }
         return 0.0f;
     });
-    characters.at(5)->AddSkillAndUlt([](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-            std::cout << "EMA SKILLED :3" <<std::endl << std::endl;
+    characters.at(5)->AddSkillAndUlt({[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+        std::cout << "EMA SKILLED :3" <<std::endl << std::endl;
 
-            herself->GetBuff({"atk",herself->GetStat("atk")*0.2,3});
-            herself->GetBuff({"critDmg",0.2,3});
-            herself->GetBuff({"starAbsorbA",herself->GetStat("starAbsorbA")*0.3,3});
+        herself->GetBuff({"atk",herself->GetStat("atk")*0.2,3});
+        herself->GetBuff({"critDmg",0.2,3});
+        herself->GetBuff({"starAbsorbA",herself->GetStat("starAbsorbA")*0.3,3});
 
-            for(auto& ally : allies) {
-                ally->GetBuff({"ER",ally->GetStat("ER")*0.3,3});
-                ally->GetBuff({"energy",20,0});
-            }
-    },[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+        for(auto& ally : allies) {
+            ally->GetBuff({"ER",ally->GetStat("ER")*0.3,3});
+            ally->GetBuff({"energy",20,0});
+        }
+    },6,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
         std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
         herself->GetBuff({"atk",herself->GetStat("atk")*0.2,3});
 
         return 4.0f;
     });
-    characters.at(6)->AddSkillAndUlt([](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-            herself->GetBuff({"starAbsorbQ",0.3,3});
-            herself->GetBuff({"energy",60,0});
-            herself->GetBuff({"starGen",5,3});
-
-    },[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+    characters.at(6)->AddSkillAndUlt({[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+        herself->GetBuff({"starAbsorbQ",0.3,3});
+        herself->GetBuff({"energy",60,0});
+        herself->GetBuff({"starGen",5,3});
+    },5,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
     std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
         for(auto& ally : allies) {
@@ -180,13 +186,15 @@ int main(int argc, char* argv[]) {
 
         return 0.0f;
     });
-    characters.at(7)->AddSkillAndUlt([](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
-            std::cout << "HEAL1 SKILLED :3" <<std::endl << std::endl;
+    characters.at(7)->AddSkillAndUlt( {
+        [](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+std::cout << "HEAL1 SKILLED :3" <<std::endl << std::endl;
 
-            herself->SetHP(5000);
-            herself->GetBuff({"energy",10,0});
+herself->SetHP(5000);
+herself->GetBuff({"energy",10,0});
 
-    },[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
+}
+    ,2,0},[](std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself) {
 
     std::cout << "EPHYXAME ULTED :3" <<std::endl << std::endl;
         for(auto& ally : allies) {
@@ -227,7 +235,8 @@ int main(int argc, char* argv[]) {
     //CONSISTENT UI BACKGROUND
     Button combat_NA("NA","./assets/combat/NA.png",SDL_Rect{1432,829,149,134},[] {SimulateKeyPress(SDLK_q);});
     Button::AddBasicScaleUpHoverAnim(&combat_NA);
-    Button combat_skill("skill","./assets/combat/skill.png",SDL_Rect{1579,743,127,120}, []{SimulateKeyPress(SDLK_e);});
+    TextButton combat_skill("skill","./assets/combat/skill.png",SDL_Rect{1579,743,127,120}, []{SimulateKeyPress(SDLK_e);},
+        "./assets/fonts/combat_DMG.otf","",SDL_Color{255,255,255},70);
     Button::AddBasicScaleUpHoverAnim(&combat_skill);
 
     Button combat_Buster("BusterNA","./assets/combat/buster.png",SDL_Rect{1291,720,104,47}, []{SimulateKeyPress(SDLK_1);});
@@ -602,16 +611,23 @@ int main(int argc, char* argv[]) {
     UIElement postFight_charAnim2("char2","./assets/UI/empty.jpg",SDL_Rect{1356,112,709,1417});
     UIElement postFight_charAnim3("char3","./assets/UI/empty.jpg",SDL_Rect{1122,-75,709,1417});
 
-    UIElement postFight_materialTier1("tier1Mat","./assets/UI/matTier1.png",SDL_Rect{271,475,211,398});
+    UIElement postFight_materialTier1("tier1Mat","./assets/UI/matTier1.png",SDL_Rect{211,475,211,398});
     postFight_materialTier1.GetTransform().scale = 0.3f;
-    UIElement postFight_materialTier2("tier2Mat","./assets/UI/matTier2.png",SDL_Rect{477,489,211,398});
+    UIElement postFight_materialTier2("tier2Mat","./assets/UI/matTier2.png",SDL_Rect{417,489,211,398});
     postFight_materialTier2.GetTransform().scale = 0.2f;
-    UIElement postFight_materialTier3("tier3Mat","./assets/UI/matTier3.png",SDL_Rect{650,497,211,398});
+    UIElement postFight_materialTier3("tier3Mat","./assets/UI/matTier3.png",SDL_Rect{590,497,211,398});
     postFight_materialTier3.GetTransform().scale = 0.15f;
 
-    Text postFight_tier1Gained("tier1Gained","./assets/fonts/combat_main.ttf",SDL_Rect{331,500,211,398},"100",SDL_Color{255,255,255},50);
-    Text postFight_tier2Gained("tier2Gained","./assets/fonts/combat_main.ttf",SDL_Rect{537,500,211,398},"100",SDL_Color{255,255,255},50);
-    Text postFight_tier3Gained("tier3Gained","./assets/fonts/combat_main.ttf",SDL_Rect{700,500,211,398},"100",SDL_Color{255,255,255},50);
+    Text postFight_tier1Gained("tier1Gained","./assets/fonts/combat_main.ttf",SDL_Rect{271,500,211,398},"100",SDL_Color{255,255,255},50);
+    Text postFight_tier2Gained("tier2Gained","./assets/fonts/combat_main.ttf",SDL_Rect{477,500,211,398},"100",SDL_Color{255,255,255},50);
+    Text postFight_tier3Gained("tier3Gained","./assets/fonts/combat_main.ttf",SDL_Rect{640,500,211,398},"100",SDL_Color{255,255,255},50);
+
+    Sprite postFight_nodeStar1("lessthan5","./assets/UI/postBattleStarEmpty.png",SDL_Rect{404,625,90,87});
+    postFight_nodeStar1.AddState("got","./assets/UI/postBattleStarGot.png");
+    Sprite postFight_nodeStar2("lessthan10","./assets/UI/postBattleStarEmpty.png",SDL_Rect{539,625,90,87});
+    postFight_nodeStar2.AddState("got","./assets/UI/postBattleStarGot.png");
+    Sprite postFight_nodeStar3("noDeaths","./assets/UI/postBattleStarEmpty.png",SDL_Rect{674,625,90,87});
+    postFight_nodeStar3.AddState("got","./assets/UI/postBattleStarGot.png");
 
     TextButton postFight_continue("continue","./assets/UI/tutorialsButtonBg.png",SDL_Rect{256,756,340,50},
         [&mainMenu] {
@@ -629,6 +645,9 @@ int main(int argc, char* argv[]) {
     postFight.AddUIElement(&postFight_tier2Gained);
     postFight.AddUIElement(&postFight_tier3Gained);
     postFight.AddUIElement(&postFight_continue);
+    postFight.AddUIElement(&postFight_nodeStar1);
+    postFight.AddUIElement(&postFight_nodeStar2);
+    postFight.AddUIElement(&postFight_nodeStar3);
 
     ///----------MAIN MENU INIT-------------------
     ///
@@ -766,8 +785,9 @@ int main(int argc, char* argv[]) {
                 if(fight->AreAnimsOver()){
                     if (fight->GetCombatState() == OVER) {
                         ChangeScene(&postFight);
-                        PostFightAnim(postFight.GetUIElements(),fight->GetCharacters(),fight->MaterialsEarned());
+                        PostFightAnim(postFight.GetUIElements(),fight->GetCharacters(),fight->MaterialsEarned(),fight->GetLevelStars());
                         player->UpdateMats(fight->MaterialsEarned());
+                        adventures.UpdateLastNode(fight->GetLevelStars());
                     }
                     if(fight->GetCombatState() == WAITINGFORENEMYANIM) {
                         fight->CountNextAction();
@@ -818,6 +838,8 @@ int main(int argc, char* argv[]) {
                                 case WAITINGFORACTION: {
                                     switch (event.key.keysym.sym) {
                                         case SDLK_e: {
+                                            if (!fight->GetCurrentlyActing()->CanSkill())
+                                                break;
                                             fight->SetNaTypeChooser(false);
                                             if(fight->GetCurrentlyActing()->skillNeedsTarget) {
                                                 std::cout << "Skill needs target" << std::endl;
@@ -879,6 +901,7 @@ int main(int argc, char* argv[]) {
         }
     }
     UpdateProfileData(player);
+    adventures.WriteNodeDataToFile();
 
     for (auto it = characters.begin(); it != characters.end(); ) {
         delete *it;

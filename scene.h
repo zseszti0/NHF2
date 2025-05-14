@@ -8,7 +8,7 @@ class Fight;
 class PreFight;
 
 #include "UIAndDisplay.h"
-#include "combat.h"
+#include "charactersAndEnemies.h"
 #include "adventure.h"
 #include "gameEngine.h"
 
@@ -168,7 +168,7 @@ class Fight : public Scene {
     int skillPoints;
     int currentEnemyTarget;
 
-    int levelStars = 0;
+    FightNodeStars levelStars = {false,false,false};
 public:
 
     Fight(const char* n, const char* texturePath, std::vector<Character*> chars) : Scene(n,texturePath), AV(0), currentlyActing(nullptr), combatState(WAITINGFORACTION), starCount(0), skillPoints(3), currentEnemyTarget(0) {
@@ -211,6 +211,8 @@ public:
     void End(bool won);
     GameMats MaterialsEarned();
 
+    FightNodeStars GetLevelStars(){return levelStars;}
+
     void ChangeEnemyTarget(int dir);
     void RecalcEnemyTarget();
     int CalculateStarsGot(TypeMultiplier type);
@@ -230,6 +232,7 @@ public:
     void ChangeTurnOrderCont();
     void SetWhosTurnText(bool mine);
     void SetSkillNeedsTarget(bool isVisible);
+    void SetSkillButtonVisuals();
 
     //anims
     void UpdateTweens(float dt) override;
@@ -291,7 +294,7 @@ class AdventuresMenu : public Scene {
   std::vector<FightNode*> nodes;
 
   SpriteButton* preFightTutorials = nullptr;
-
+  int lastAttempted = 0;
 public:
   AdventuresMenu(const char* n, const char* texturePath) : Scene(n,texturePath){};
   void AddNode(FightNode* node) {
@@ -304,12 +307,15 @@ public:
   void CheckButtonsOnClick(int mouseX, int mouseY) override;
   void CheckButtonsHover(int mouseX, int mouseY) override;
 
+  void UpdateLastNode(FightNodeStars starsGot);
+
   void LoadScene() override;
-  void StartAdventure(int n);
+
+  void WriteNodeDataToFile();
 
   ~AdventuresMenu() override;
 };
 
-void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> winners, GameMats matsgot);
+void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> winners, GameMats matsgot,FightNodeStars starsGot);
 
 #endif

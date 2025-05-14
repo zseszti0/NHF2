@@ -1,4 +1,4 @@
-trialRun 0 false
+trialRun false false false false
 snail 5
 rabbit 10
 snail 5

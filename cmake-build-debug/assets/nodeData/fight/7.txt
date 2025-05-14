@@ -1,4 +1,4 @@
-trialRun 0 false
+trialRun true false true false
 fly 20
 squid 20
 paladin 25

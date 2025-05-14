@@ -490,8 +490,9 @@ void PreFight::StartFight() {
 }
 
 void AdventuresMenu::CheckButtonsOnClick(int mouseX, int mouseY) {
-    for(auto& element : nodes) {
-        element->HandleClick(mouseX, mouseY);
+    for (size_t i = 0; i < nodes.size(); i++) {
+        if (nodes.at(i)->HandleClick(mouseX, mouseY))
+            lastAttempted = i;
     }
     for(auto element : uiBoundle) {
         auto button = dynamic_cast<Button*>(element);
@@ -531,9 +532,7 @@ void AdventuresMenu::LoadScene() {
 
     if (tutorialsOverlay) tutorialsOverlay->Render();
 }
-void AdventuresMenu::StartAdventure(int n) {
 
-}
 void AdventuresMenu::InitPreFights() {
     for (auto& node : nodes) {
         node->CreatePreFight(preFightTutorials);
@@ -562,3 +561,59 @@ void AdventuresMenu::PositionNodes() {
         }
     }
 }
+void AdventuresMenu::UpdateLastNode(FightNodeStars starsGot) {
+    nodes.at(lastAttempted)->UpdateStars(starsGot);
+}
+
+void AdventuresMenu::WriteNodeDataToFile() {
+    for (size_t i = 0; i < nodes.size(); i++) {
+        std::string fileName = "./assets/nodeData/fight/" + std::to_string(i+1) + ".txt";
+        std::ifstream infile(fileName.c_str());
+        if (!infile) {
+            std::cerr << "Failed to open file for reading.\n";
+            return;
+        }
+
+        std::vector<std::string> lines;
+        std::string line;
+
+        // Read all lines
+        while (std::getline(infile, line)) {
+            lines.push_back(line);
+        }
+        infile.close();
+        if (lines.empty()) {
+            std::cerr << "File is empty.\n";
+            return;
+        }
+
+        // Rewrite the first line
+        std::ostringstream newFirstLine;
+        newFirstLine << nodes.at(i)->GetName();
+        std::vector<bool> newFlags(4);
+        newFlags.at(0) = nodes.at(i)->GetAttempted();
+        FightNodeStars starsGot = nodes.at(i)->GetStars();
+        newFlags.at(1) = starsGot.lessThan5;
+        newFlags.at(2) = starsGot.lessThan10;
+        newFlags.at(3) = starsGot.noDeaths;
+        for (bool b : newFlags) {
+            newFirstLine << " " << (b ? "true" : "false");
+        }
+        lines[0] = newFirstLine.str();
+
+        // Write back all lines
+        std::ofstream outfile(fileName.c_str());
+        if (!outfile) {
+            std::cerr << "Failed to open file for writing.\n";
+            return;
+        }
+
+        for (const std::string& l : lines) {
+            outfile << l << "\n";
+        }
+
+        outfile.close();
+    }
+}
+
+

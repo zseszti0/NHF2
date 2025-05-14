@@ -235,6 +235,7 @@ void Text::ChangeColor(SDL_Color c) {
     color = c;
 }
 void Text::ChangeFont(const char* fontPath) {
+    TTF_CloseFont(font);
     font = TTF_OpenFont(fontPath, size);
 }
 void Text::ChangeText(const char* t) {
@@ -294,7 +295,9 @@ void OutlinedText::Render() {
 }
 
 void OutlinedText::ChangeFont(const char *fontPath) {
+    TTF_CloseFont(font);
     font = TTF_OpenFont(fontPath, size);
+    TTF_SetFontOutline(outlineFont, outlineSize);
     outlineFont = TTF_OpenFont(fontPath, size);
 }
 

@@ -1,6 +1,6 @@
 #include "UIAndDisplay.h"
 #include "scene.h"
-#include "combat.h"
+#include "charactersAndEnemies.h"
 
 #include <cmath>
 #include <string>
@@ -107,14 +107,18 @@ void Fight::ConfigureStartingState(){
     }
 
     std::vector<UIElement*> enemySprites;
+
+    int totalWidth = 0;
     for(auto& enemy:enemies) {
         fieldMobs.push_back(enemy);
         enemy->UpdateAv();
         enemySprites.push_back(enemy->GetSprite());
         enemy->GetSprite()->GetTransform().position.y = 400;
+        totalWidth += enemy->GetSprite()->GetTransform().position.w + 20;
         enemy->Reset();
     }
-    EQPosUIElements(SDL_Rect{400,400,1056,301},enemySprites);
+    totalWidth = totalWidth >= 1920 ? 1920 : totalWidth;
+    EQPosUIElements(SDL_Rect{(1920 - totalWidth)/2,400,totalWidth,301},enemySprites);
     for (size_t i = 0; i < enemies.size(); i++) {
         SDL_Rect barPos = enemies.at(i)->GetSprite()->GetTransform().position;
         int x = barPos.x + barPos.w/2 - 230/2;
@@ -181,7 +185,8 @@ void Fight::CountNextAction() {
     if(actor) {
         currentlyActing = actor;
 
-        this->TintGreyUIElement(actor->color,"skill");
+        currentlyActing->CountdownTurn();
+        this->SetSkillButtonVisuals();
         this->TintGreyUIElement(actor->color,"NA");
 
         this->ScaleCharacterCont(true,currentlyActing);
@@ -231,7 +236,9 @@ void Fight::EnemyAction() {
 
     EnemyAtk(currentlyActingEnemy);
     ScaleUpEnemyCont();
-    combatState = WAITINGFORENEMYANIM;
+
+    if (combatState != OVER)
+        combatState = WAITINGFORENEMYANIM;
 }
 
 
@@ -278,6 +285,7 @@ void Fight::Skill(int n) {
         combatState = WAITINGFORTARGET;
         return;
     }
+
 
     skillPoints--;
 
@@ -491,15 +499,15 @@ void Fight::CheckIfOver() {
     }
 }
 void Fight::End(bool win) {
-    levelStars = 0;
     if (win) {
-        bool noDeaths = true;
+        levelStars.noDeaths = true;
         for(auto& ch : characters) {
-            if(!ch->GetIsDead()) noDeaths = false;
+            if(ch->GetIsDead()) levelStars.noDeaths = false;
         }
-        if (noDeaths) levelStars++;
-        if (AV < 2000) levelStars++;
-        if (AV < 10000) levelStars++;
+        if (AV < 2000) levelStars.lessThan10 = true;
+        if (AV < 5000) levelStars.lessThan5 = true;
+        std::cout << "!!!!!!!!!!!level stars: " << levelStars.lessThan5 << levelStars.lessThan10 << levelStars.noDeaths
+        <<std::endl;
     }
 
     for (auto& element : uiBoundle) {
@@ -512,7 +520,11 @@ void Fight::End(bool win) {
 }
 GameMats Fight::MaterialsEarned() {
     GameMats mats = {0,0,0};
-    switch (levelStars) {
+    int numOfStars = 0;
+    numOfStars += levelStars.lessThan5 ? 1 : 0;
+    numOfStars += levelStars.lessThan10 ? 1 : 0;
+    numOfStars += levelStars.noDeaths ? 1 : 0;
+    switch (numOfStars) {
         case 3: {
             mats = {20,100,200};
             break;
@@ -536,17 +548,16 @@ GameMats Fight::MaterialsEarned() {
 
 
 void Fight::ChangeEnemyTarget(int dir) {
-    currentEnemyTarget += dir;
-    if(currentEnemyTarget == -1) currentEnemyTarget = enemies.size() - 1;
-    else if(currentEnemyTarget >= (int)enemies.size()) currentEnemyTarget = 0;
+    do {
+        currentEnemyTarget += dir;
+        if(currentEnemyTarget == -1) currentEnemyTarget = enemies.size() - 1;
+        else if(currentEnemyTarget >= (int)enemies.size()) currentEnemyTarget = 0;
+    } while (enemies.at(currentEnemyTarget)->GetIsDead());
 
     this->PositionTarget(currentEnemyTarget);
-
 }
 void Fight::RecalcEnemyTarget() {
-    while(enemies.at(currentEnemyTarget)->GetIsDead()) {
-            ChangeEnemyTarget(1);
-    }
+    this->ChangeEnemyTarget(1);
 }
 
 int Fight::CalculateStarsGot(TypeMultiplier type) {
@@ -726,6 +737,22 @@ void Fight::SetSkillNeedsTarget(bool isVisible) {
                 }
             }
             std::cout << "skill needs target vbisible" <<std::endl;
+        }
+    }
+}
+void Fight::SetSkillButtonVisuals() {
+    for (auto& element : uiBoundle) {
+        if (element->GetName() == "skill") {
+            auto label = dynamic_cast<Text*>(element);
+            if (currentlyActing->CanSkill()) {
+                label->ChangeText("");
+                label->Tint(currentlyActing->color);
+            }
+            else {
+                label->ChangeText(std::to_string(currentlyActing->SkillCooldownLeft()).c_str());
+                label->UnTint();
+                label->ChangeColor(currentlyActing->color);
+            }
         }
     }
 }

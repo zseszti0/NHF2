@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 #include "filesAndSaving.h"
 
@@ -16,11 +17,18 @@ FightNode::FightNode(const char* source){
 
     std::istringstream lineStream(firstLine);
 
+    lineStream >> name;
     attempted = false;
-    stars = 0,
-    lineStream >> name >> stars >> std::boolalpha >> attempted;
-    
-
+    std::vector<bool> bools(4);
+    for (auto && value : bools) {
+        bool b;
+        lineStream >> std::boolalpha >> b;
+        std::cout << "levelstar : " << b << std:: endl;
+        value = b;
+    }
+    attempted = bools[0];
+    stars = {bools[3],bools[1],bools[2]};
+    std::cout <<"----------------------LEVEL NODE STARS--: " << stars.noDeaths << " " << stars.lessThan5 << " " << stars.lessThan10 << std::endl;
     // Load the monsters into a vector of strings
     std::string line;
     std::string monster;
@@ -40,11 +48,14 @@ FightNode::FightNode(const char* source){
     }
     
         
-    icon = new Sprite("0","./assets/UI/FightNode0.png",SDL_Rect{0,0,286,273});
-    icon->AddState("1", "./assets/UI/FightNode1.png");
-    icon->AddState("2", "./assets/UI/FightNode2.png");
-    icon->AddState("3", "./assets/UI/FightNode3.png");
-    icon->ChangeState(stars);
+    icon = new Sprite("000","./assets/UI/FightNode000.png",SDL_Rect{0,0,286,273});
+    icon->AddState("001", "./assets/UI/FightNode001.png");
+    icon->AddState("010", "./assets/UI/FightNode010.png");
+    icon->AddState("110", "./assets/UI/FightNode110.png");
+    icon->AddState("011", "./assets/UI/FightNode011.png");
+    icon->AddState("111", "./assets/UI/FightNode111.png");
+
+    this->UpdateSpriteIconState();
     if (!attempted) icon->Tint(SDL_Color{65, 65, 65});
 }
 void FightNode::CreatePreFight(SpriteButton* tutOverlay) {
