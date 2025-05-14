@@ -58,7 +58,8 @@ protected:
   Transform transform = {{0,0,0,0},1.0f,1.0f,0,{0,0,0,0}};
   bool isVisible;
 public:
-
+  static float scaleX;
+  static float scaleY;
   static SDL_Renderer* renderer;
 
   UIElement(const char* n = "empty", const char* texturePath = "./assets/UI/empty.jpg", SDL_Rect rect = {0,0,0,0});
@@ -90,9 +91,7 @@ public:
   void UpdateTweens(float dt);
 
 
-  virtual ~UIElement() {
-    delete animation;
-  }
+  virtual ~UIElement();
 };
 ///Trivial usecase. Works with costum callBack functions to suit each buttons need.
 class Button : virtual public UIElement {
@@ -119,12 +118,12 @@ public:
   void ChangeClickFiled(SDL_Rect area){clickField =area;}
   void Disable(bool yes){isActive = !yes;}
 
+  void Render() override;
+
   static void AddBasicScaleUpHoverAnim(Button* target,float anchorX = 0.5f,float anchorY = 0.5f ,float scale = 1.15f);
 
 
-  ~Button() override {
-    std::cout << "Button dtor" << std::endl;
-  }
+  ~Button() override;
 };
 ///Sprites with one layer of changing element. Can switch between states, given its name.
 class Sprite : virtual public UIElement {
@@ -156,9 +155,7 @@ public:
   std::string GetCurrentState(){return currentState;}
   int GetCurrentStateIndex(){return NameToIndex(currentState.c_str());}
 
-  ~Sprite() override {
-    std::cout << "Sprite dtor" << std::endl;
-  }
+  ~Sprite() override;
 };
 ///Text yippie
 class Text : virtual public UIElement {
@@ -179,9 +176,7 @@ public:
 
   void Render() override;
 
-  ~Text() override {
-    TTF_CloseFont(font);
-  }
+  ~Text() override;
 };
 class OutlinedText : public Text {
   SDL_Color outlineColor{};
@@ -195,9 +190,7 @@ public:
   void ChangeFont(const char *fontPath) override;
 
   void Render() override;
-  ~OutlinedText() override {
-    TTF_CloseFont(outlineFont);
-  }
+  ~OutlinedText() override;
 };
 
 ///Bar for hp bars, ult bars, anything that has a max value and visually its.. like.. a bar
@@ -237,9 +230,7 @@ public:
     SDL_SetTextureColorMod(barTexture.get(), tint.r, tint.g, tint.b);
   }
 
-  ~Bar() override {
-    std::cout << "Bar dtor" << std::endl;
-  }
+  ~Bar() override;
 };
 
 class SpriteButton : public Sprite, public Button {
@@ -248,9 +239,7 @@ public:
       :UIElement(n,path,rect), Sprite(n,path,rect), Button(n,path,rect,std::move(func)) {}
 
   void Render() override;
-  ~SpriteButton() override {
-    std::cout << "SpriteButton dtor" << std::endl;
-  }
+  ~SpriteButton() override;
 };
 class TextButton : public Text, public Button {
   std::shared_ptr<SDL_Texture> textTexture;
@@ -267,7 +256,7 @@ public:
 
   void Render() override;
 
- ~TextButton() override {}
+ ~TextButton() override;
 };
 
 

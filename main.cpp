@@ -54,6 +54,10 @@ int main(int argc, char* argv[]) {
 
     Scene::renderer = renderer; //set it as the renderer for the visual classes
     UIElement::renderer = Scene::renderer;
+    int windowWidth, windowHeight;
+    SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
+    UIElement::scaleX = static_cast<float>(windowWidth)/ 1920;
+    UIElement::scaleY = static_cast<float>(windowHeight)/ 1080;
 
     //4.) Init ttf
     if (TTF_Init() == -1) {

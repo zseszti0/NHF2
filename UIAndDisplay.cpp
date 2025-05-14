@@ -6,8 +6,8 @@
 #include <memory>
 
 SDL_Renderer* UIElement::renderer = nullptr;  // Static member initialization
-
-
+float UIElement::scaleX;
+float UIElement::scaleY;
 
 ///UIElements
 ///
@@ -42,7 +42,15 @@ void UIElement::Render() {
 
 
         SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
-        SDL_RenderCopyEx(renderer,texture.get(),&transform.scrRect,&scaledPos,transform.rotation,nullptr,SDL_FLIP_NONE);
+
+        SDL_Rect fullscreentexture =
+            {(int)(scaledPos.x * scaleX),
+            (int)(scaledPos.y * scaleY),
+            (int)(scaledPos.w * scaleX),
+            (int)(scaledPos.h * scaleY)
+        };
+
+        SDL_RenderCopyEx(renderer,texture.get(),&transform.scrRect,&fullscreentexture,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
 }
 void UIElement::ScaleUp(float scaleFactor, float anchorX, float anchorY) {
@@ -132,7 +140,28 @@ void Button::AddBasicScaleUpHoverAnim(Button *target, float anchorX, float ancho
         target->transform.position = ogPos;
     });
 }
+void Button::Render() {
+    if(isVisible) {
 
+        transform.opacity = std::clamp(transform.opacity, 0.0f, 1.0f); // ensure it's in bounds
+        int alpha = static_cast<int>(transform.opacity * 255.0f + 0.5f); // round to nearest int
+        SDL_SetTextureAlphaMod(texture.get(), alpha);
+        SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
+
+        SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
+
+        SDL_Rect fullscreentexture =
+            {(int)(scaledPos.x * scaleX),
+            (int)(scaledPos.y * scaleY),
+            (int)(scaledPos.w * scaleX),
+            (int)(scaledPos.h * scaleY)
+        };
+
+        clickField = fullscreentexture;
+
+        SDL_RenderCopyEx(renderer,texture.get(),&transform.scrRect,&fullscreentexture,transform.rotation,nullptr,SDL_FLIP_NONE);
+    }
+}
 
 size_t Sprite::NameToIndex(const char *name) {
     int index = 0;
@@ -196,7 +225,18 @@ void SpriteButton::Render() {
         SDL_SetTextureAlphaMod(texture.get(), alpha);
         SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderCopyEx(renderer,texture.get(),&transform.scrRect,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
+
+        SDL_Rect fullscreentexture =
+            {(int)(scaledPos.x * scaleX),
+            (int)(scaledPos.y * scaleY),
+            (int)(scaledPos.w * scaleX),
+            (int)(scaledPos.h * scaleY)
+        };
+
+        clickField = fullscreentexture;
+
+        SDL_RenderCopyEx(renderer,texture.get(),&transform.scrRect,&fullscreentexture,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
 }
 
@@ -229,7 +269,16 @@ void Text::Render() {
         SDL_SetTextureAlphaMod(texture.get(), alpha);
         SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderCopyEx(renderer,texture.get(),nullptr,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
+
+        SDL_Rect fullscreentexture =
+            {(int)(scaledPos.x * scaleX),
+            (int)(scaledPos.y * scaleY),
+            (int)(scaledPos.w * scaleX),
+            (int)(scaledPos.h * scaleY)
+        };
+
+        SDL_RenderCopyEx(renderer,texture.get(),nullptr,&fullscreentexture,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
 }
 
@@ -261,6 +310,7 @@ void OutlinedText::Render() {
         );
         SDL_FreeSurface(textSurface);
 
+
         //need this cos we dont know the length and height of the text.
         SDL_QueryTexture(texture.get(), nullptr, nullptr, &transform.position.w, &transform.position.h);
 
@@ -290,8 +340,27 @@ void OutlinedText::Render() {
         SDL_SetTextureAlphaMod(texture.get(), alpha);
         SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderCopyEx(renderer,outlineTexture.get(),nullptr,&destRect,transform.rotation,nullptr,SDL_FLIP_NONE);
-        SDL_RenderCopyEx(renderer, texture.get(), nullptr, &transform.position, transform.rotation, nullptr, SDL_FLIP_NONE);
+
+        SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
+
+        SDL_Rect fullscreentexture =
+            {(int)(scaledPos.x * scaleX),
+            (int)(scaledPos.y * scaleY),
+            (int)(scaledPos.w * scaleX),
+            (int)(scaledPos.h * scaleY)
+        };
+
+        SDL_Rect scaledPosOutine = {destRect.x,destRect.y,(int)(destRect.w * transform.scale),(int)(destRect.h * transform.scale)};
+
+        SDL_Rect fullscreentextureOutline =
+            {(int)(scaledPosOutine.x * scaleX),
+            (int)(scaledPosOutine.y * scaleY),
+            (int)(scaledPosOutine.w * scaleX),
+            (int)(scaledPosOutine.h * scaleY)
+        };
+
+        SDL_RenderCopyEx(renderer,outlineTexture.get(),nullptr,&fullscreentextureOutline,transform.rotation,nullptr,SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, texture.get(), nullptr, &fullscreentexture, transform.rotation, nullptr, SDL_FLIP_NONE);
 
     }
 }
@@ -344,11 +413,31 @@ void Bar::Render() {
         int alpha = static_cast<int>(transform.opacity * 255.0f + 0.5f); // round to nearest int
         SDL_SetTextureAlphaMod(texture.get(), alpha);
         SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
-        SDL_RenderCopyEx(renderer,texture.get(),nullptr,&transform.position,transform.rotation,nullptr,SDL_FLIP_NONE);
+
+        SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
+
+        SDL_Rect fullscreentexture =
+            {(int)(scaledPos.x * scaleX),
+            (int)(scaledPos.y * scaleY),
+            (int)(scaledPos.w * scaleX),
+            (int)(scaledPos.h * scaleY)
+        };
+
+        SDL_RenderCopyEx(renderer,texture.get(),nullptr,&fullscreentexture,transform.rotation,nullptr,SDL_FLIP_NONE);
 
         SDL_SetTextureAlphaMod(barTexture.get(), alpha);
         SDL_SetTextureBlendMode(barTexture.get(), SDL_BLENDMODE_BLEND);
-        SDL_RenderCopyEx(renderer,barTexture.get(),&transform.scrRect,&barPos,transform.rotation,nullptr,SDL_FLIP_NONE);
+
+        SDL_Rect scaledPosBar = {barPos.x,barPos.y,(int)(barPos.w * transform.scale),(int)(barPos.h * transform.scale)};
+
+        SDL_Rect fullscreentextureBar =
+            {(int)(scaledPosBar.x * scaleX),
+            (int)(scaledPosBar.y * scaleY),
+            (int)(scaledPosBar.w * scaleX),
+            (int)(scaledPosBar.h * scaleY)
+        };
+
+        SDL_RenderCopyEx(renderer,barTexture.get(),&transform.scrRect,&fullscreentextureBar,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
 }
 
@@ -373,8 +462,28 @@ void TextButton::Render() {
         SDL_SetTextureAlphaMod(textTexture.get(), alpha);
         SDL_SetTextureBlendMode(textTexture.get(), SDL_BLENDMODE_BLEND);
 
-        SDL_RenderCopyEx(renderer, texture.get(), nullptr, &transform.position, transform.rotation, nullptr, SDL_FLIP_NONE);
-        SDL_RenderCopyEx(renderer, textTexture.get(), nullptr, &textRect, transform.rotation, nullptr, SDL_FLIP_NONE);
+        SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
+
+        SDL_Rect fullscreentexture =
+            {(int)(scaledPos.x * scaleX),
+            (int)(scaledPos.y * scaleY),
+            (int)(scaledPos.w * scaleX),
+            (int)(scaledPos.h * scaleY)
+        };
+
+        SDL_Rect scaledPosText = {textRect.x,textRect.y,(int)(textRect.w * transform.scale),(int)(textRect.h * transform.scale)};
+
+        SDL_Rect fullscreentextureText =
+            {(int)(scaledPosText.x * scaleX),
+            (int)(scaledPosText.y * scaleY),
+            (int)(scaledPosText.w * scaleX),
+            (int)(scaledPosText.h * scaleY)
+        };
+
+        clickField = fullscreentexture;
+
+        SDL_RenderCopyEx(renderer, texture.get(), nullptr, &fullscreentexture, transform.rotation, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(renderer, textTexture.get(), nullptr, &fullscreentextureText, transform.rotation, nullptr, SDL_FLIP_NONE);
 
     }
 }
