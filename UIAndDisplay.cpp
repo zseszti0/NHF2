@@ -40,6 +40,7 @@ void UIElement::Render() {
         SDL_SetTextureAlphaMod(texture.get(), alpha);
         SDL_SetTextureBlendMode(texture.get(), SDL_BLENDMODE_BLEND);
 
+
         SDL_Rect scaledPos = {transform.position.x,transform.position.y,(int)(transform.position.w * transform.scale),(int)(transform.position.h * transform.scale)};
         SDL_RenderCopyEx(renderer,texture.get(),&transform.scrRect,&scaledPos,transform.rotation,nullptr,SDL_FLIP_NONE);
     }
@@ -90,6 +91,7 @@ void UIElement::UpdateTweens(float dt) {
         }
     }
 }
+
 
 
 
@@ -461,5 +463,39 @@ void EQPosUIElements(SDL_Rect area, std::vector<Button*> &elements, bool horizon
     for(auto& element: elements) {
         element->ChangeClickFiled(element->GetTransform().position);
     }
+}
+
+
+UIElement::~UIElement() {
+    delete animation;
+    std::cout << "UIElement dtor" << std::endl;
+
+}
+Button::~Button() {
+    std::cout << "Button dtor" << std::endl;
+
+}
+Sprite::~Sprite() {
+    std::cout << "Sprite dtor" << std::endl;
+
+}
+Text::~Text() {
+    std::cout << "Text dtor" << std::endl;
+    TTF_CloseFont(font);
+}
+OutlinedText::~OutlinedText() {
+    std::cout << "Outlined text dtor" << std::endl;
+    TTF_CloseFont(outlineFont);
+}
+Bar::~Bar() {
+    std::cout << "Bar dtor" << std::endl;
+
+}
+SpriteButton::~SpriteButton() {
+    std::cout << "SpriteButton dtor" << std::endl;
+
+}
+TextButton::~TextButton() {
+    std::cout << "SpriteButton dtor" << std::endl;
 }
 

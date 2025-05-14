@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
         "ddddddddddddd",
     SDL_WINDOWPOS_CENTERED,
     SDL_WINDOWPOS_CENTERED,
-    1280, 720,
+    1920, 1080,
     SDL_WINDOW_FULLSCREEN_DESKTOP
     );
 

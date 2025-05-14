@@ -90,7 +90,9 @@ public:
   void UpdateTweens(float dt);
 
 
-  virtual ~UIElement() = default;
+  virtual ~UIElement() {
+    delete animation;
+  }
 };
 ///Trivial usecase. Works with costum callBack functions to suit each buttons need.
 class Button : virtual public UIElement {
