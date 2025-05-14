@@ -511,7 +511,10 @@ herself->GetBuff({"energy",10,0});
     charOverview.AddUIElement(&charOverview_matTier1Text);
     charOverview.AddUIElement(&charOverview_matTier2Text);
     charOverview.AddUIElement(&charOverview_matTier3Text);
-    charOverview.AddUIElement(&closeMenu);
+
+    Button closeMenuCharOverview("close","./assets/UI/closeTutorials.png",SDL_Rect{1785,10,118,87},[&mainMenu]{ChangeScene(&mainMenu);});
+
+    charOverview.AddUIElement(&closeMenuCharOverview);
 
 
     ///----------PREBATTLE SCENE INIT-------------------
@@ -619,6 +622,7 @@ herself->GetBuff({"energy",10,0});
         }
     }
     adventures.PositionNodes();
+    adventures.AddUIElement(&closeMenu);
 
     ///----------POSTFIGHT MENU INIT-------------------
     ///

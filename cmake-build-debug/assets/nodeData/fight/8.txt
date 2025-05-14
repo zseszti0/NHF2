@@ -1,4 +1,4 @@
-trialRun false false false false
+trialRun true false false false
 totem 30
 paladin 50
 totem 30

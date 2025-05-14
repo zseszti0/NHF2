@@ -173,6 +173,8 @@ public:
         skill.cooldown = 0;
         skill.activeCooldown = 0;
 
+        isDead = false;
+
     }
     void AddSkillAndUlt(Skill newSkill,
         std::function<float(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself)> ultFunc)

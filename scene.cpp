@@ -313,21 +313,22 @@ void CharOverview::ChagneMenu(int i) {
 void CharOverview::Level() {
 
     int level = activeCharacter->GetLevel();
+    if (level == 10) return;
     GameMats matsNeeded;
     if (1 <= level && level < 5) {
-        matsNeeded.tier1 = 1;
-        matsNeeded.tier2 = 5;
-        matsNeeded.tier3 = 10 + (level+1)*5;
+        matsNeeded.tier1 = 1 + (level-1)*1;
+        matsNeeded.tier2 = 5 + (level-1)*2;
+        matsNeeded.tier3 = 10 + (level+1)*20;
     }
     else if (5 <= level && level < 7) {
-        matsNeeded.tier1 = 5;
-        matsNeeded.tier2 = 10 + (level-1)*2;
-        matsNeeded.tier3 = 10 + (level+1)*5;
+        matsNeeded.tier1 = 5 + (level-1)*1;
+        matsNeeded.tier2 = 10 + (level-1)*8;
+        matsNeeded.tier3 = 10 + (level+1)*20;
     }
     else if (7 <= level && level < 10) {
-        matsNeeded.tier1 = 10 + (level-1)*1;
-        matsNeeded.tier2 = 10 + (level-1)*5;
-        matsNeeded.tier3 = 10;
+        matsNeeded.tier1 = 10 + (level-1)*5;
+        matsNeeded.tier2 = 10 + (level-1)*10;
+        matsNeeded.tier3 = 50;
     }
     bool canUpgrade = matsNeeded.tier1 <= mats.tier1 && matsNeeded.tier2 <= mats.tier2 && matsNeeded.tier3 <= mats.tier3;
     if (canUpgrade) {

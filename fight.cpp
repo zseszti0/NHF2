@@ -104,6 +104,8 @@ void Fight::ConfigureStartingState(){
         ch->ResetStats();
         fieldMobs.push_back(ch);
         ch->GetSprite()->SetVisible(true);
+        ch->SetIsDead(false);
+        ch->GetSprite()->UnTint();
     }
 
     std::vector<UIElement*> enemySprites;
@@ -118,6 +120,7 @@ void Fight::ConfigureStartingState(){
         enemy->Reset();
     }
     totalWidth = totalWidth >= 1920 ? 1920 : totalWidth;
+    totalWidth = totalWidth < 1000 ? 1000 : totalWidth;
     EQPosUIElements(SDL_Rect{(1920 - totalWidth)/2,400,totalWidth,301},enemySprites);
     for (size_t i = 0; i < enemies.size(); i++) {
         SDL_Rect barPos = enemies.at(i)->GetSprite()->GetTransform().position;
@@ -514,12 +517,18 @@ void Fight::End(bool win) {
         if (element->GetName() == "battleOver") {
             element->SetVisible(true);
             if (!win) element->Tint(SDL_Color{135, 16, 16});
+            else element->UnTint();
                 CombatUltAnim(element,animProps.at(6));
         }
     }
 }
 GameMats Fight::MaterialsEarned() {
     GameMats mats = {0,0,0};
+    bool allAlliesDead = true;
+    for(auto& ch : characters) {
+        if(!ch->GetIsDead()) allAlliesDead = false;
+    }
+    if (allAlliesDead) return mats;
     int numOfStars = 0;
     numOfStars += levelStars.lessThan5 ? 1 : 0;
     numOfStars += levelStars.lessThan10 ? 1 : 0;

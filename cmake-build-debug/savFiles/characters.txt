@@ -5,4 +5,4 @@ Calleope 224,73,106 15200 12629 35 7 136 1.1 0.8 0.8 0.8 110 10 false false true
 Salmenior 153,40,12 8313 12670 30 5 140 0.9 0.4 0.4 0.4 90 10 false true false
 Ematelliea 121,169,230 10013 13540 30 3 160 0.85 0.5 0.5 0.5 90 10 false true true
 Ecdysimemnon 223,119,235 9291 14651 45 10 137 1 0.4 0.45 0.4 70 10 false true false
-Nilphexa 67,222,144 5370 20166 25 5 95 0.8 0.1 0.1 0.1 50 10 false true false
+Nilphexa 194,170,105 5370 20166 25 5 95 0.8 0.1 0.1 0.1 50 10 false true false
