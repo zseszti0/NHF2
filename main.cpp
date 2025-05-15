@@ -775,7 +775,7 @@ herself->GetBuff({"energy",10,0});
 
             }
 
-            SDL_Delay(16); // Small delay to prevent CPU overuse (~60 FPS)
+            //(16); // Small delay to prevent CPU overuse (~60 FPS)
         }
  ///Loop is event type handling to avoid unnecesary rendering.
         ///(Sience it's turn based with minimal animations, not much will happen unless the user clicked or typed a kew)
@@ -920,7 +920,7 @@ herself->GetBuff({"energy",10,0});
             Game::currentScene->LoadScene();
             SDL_RenderPresent(renderer);
 
-            SDL_Delay(16); // Small delay to prevent CPU overuse (~60 FPS)
+            //SDL_Delay(16); // Small delay to prevent CPU overuse (~60 FPS)
         }
     }
     UpdateProfileData(player);
