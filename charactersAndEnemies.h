@@ -58,7 +58,7 @@ struct Dmg {
     Dmg() {amount = 0; isCrit = false; starsGenerated = 0;}
     Dmg(double dmg_dealt, bool is_crit, int stars_gend) : amount(dmg_dealt), isCrit(is_crit), starsGenerated(stars_gend) {};
 };
-struct Skill {
+struct SkillStruct {
     std::function<void(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself)> effect;
     int cooldown;
     int activeCooldown;
@@ -138,7 +138,7 @@ class Character : public Mob {
 
     bool isCurrentlyAoe;
 
-    Skill skill;
+    SkillStruct skill;
     std::function<float(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself)> ult;
 
 public:
@@ -176,7 +176,7 @@ public:
         isDead = false;
 
     }
-    void AddSkillAndUlt(Skill newSkill,
+    void AddSkillAndUlt(SkillStruct newSkill,
         std::function<float(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself)> ultFunc)
     {
         skill.effect = std::move(newSkill.effect);
