@@ -24,37 +24,34 @@ void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> wi
         if (e->GetName() == "char1") {
             e->SetTexture(winners.at(0)->GetSprite()->GetTextureAt("base"));
 
-            e->ScaleUp(0.8,1,0.5);
             Transform t = e->GetTransform();
             e->GetTransform().position.x += 150;
-            t.position.x -= 150;
+            e->GetTransform().opacity = 0.0f;
             t.opacity = 1.0f;
             e->AddTweeny(t,2000,t,OUT);
         }
         else if (e->GetName() == "char2") {
             e->SetTexture(winners.at(1)->GetSprite()->GetTextureAt("base"));
 
-            e->ScaleUp(0.8,1,0.5);
             Transform t = e->GetTransform();
             e->GetTransform().position.x += 150;
-            t.position.x -= 150;
+            e->GetTransform().opacity = 0.0f;
             t.opacity = 1.0f;
             e->AddTweeny(t,2000,t,OUT);
         }
         else if (e->GetName() == "char3") {
             e->SetTexture(winners.at(2)->GetSprite()->GetTextureAt("base"));
 
-            e->ScaleUp(0.8,1,0.5);
             Transform t = e->GetTransform();
             e->GetTransform().position.x += 150;
-            t.position.x -= 150;
+            e->GetTransform().opacity = 0.0f;
             t.opacity = 1.0f;
             e->AddTweeny(t,2000,t,OUT);
         }
         else if (e->GetName() == "tier1Mat" ||e->GetName() == "tier2Mat" || e->GetName() == "tier3Mat") {
             Transform t = e->GetTransform();
             e->GetTransform().position.x -= 100;
-            t.position.x += 100;
+            e->GetTransform().opacity = 0.0f;
             t.opacity = 1.0f;
             e->AddTweeny(t,2000,t,OUT);
         }
@@ -64,7 +61,7 @@ void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> wi
 
             Transform t = e->GetTransform();
             e->GetTransform().position.x -= 100;
-            t.position.x += 100;
+            e->GetTransform().opacity = 0.0f;
             t.opacity = 1.0f;
             e->AddTweeny(t,2000,t,OUT);
         }
@@ -74,7 +71,7 @@ void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> wi
 
             Transform t = e->GetTransform();
             e->GetTransform().position.x -= 100;
-            t.position.x += 100;
+            e->GetTransform().opacity = 0.0f;
             t.opacity = 1.0f;
             e->AddTweeny(t,2000,t,OUT);
         }
@@ -84,7 +81,7 @@ void PostFightAnim(std::vector<UIElement*>& elements, std::vector<Character*> wi
 
             Transform t = e->GetTransform();
             e->GetTransform().position.x -= 100;
-            t.position.x += 100;
+            e->GetTransform().opacity = 0.0f;
             t.opacity = 1.0f;
             e->AddTweeny(t,2000,t,OUT);
         }

@@ -231,7 +231,7 @@ class Enemy : public Mob{
     std::function<void(Mob* target)> skill = nullptr;
 
 public:
-    Enemy(const char* n, std::vector<double> stats, bool isNormalAOE = false)
+    Enemy(const char* n, std::vector<double> stats, bool isNormalAOE = false, std::function<void(Mob* target)> skillFunc = nullptr)
         : Mob(n,stats.at(0),stats.at(1),stats.at(2),stats.at(3),stats.at(6),stats.at(7),isNormalAOE)
     {
         def = stats.at(4);
@@ -246,6 +246,8 @@ public:
         sprite->GetTransform().position.w = srcRes.w;
         sprite->GetTransform().position.h = srcRes.h;
         sprite->GetTransform().scrRect = {0,0,srcRes.w,srcRes.h};
+
+        skill = std::move(skillFunc);
     }
 
     void ResetStats() override;

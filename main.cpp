@@ -627,20 +627,23 @@ herself->GetBuff({"energy",10,0});
     ///----------POSTFIGHT MENU INIT-------------------
     ///
     Scene postFight("posFight","./assets/backgrounds/afterBattle.png");
-    UIElement postFight_charAnim1("char1","./assets/UI/empty.jpg",SDL_Rect{875,147,709,1417});
-    UIElement postFight_charAnim2("char2","./assets/UI/empty.jpg",SDL_Rect{1356,112,709,1417});
-    UIElement postFight_charAnim3("char3","./assets/UI/empty.jpg",SDL_Rect{1122,-75,709,1417});
+    UIElement postFight_charAnim1("char1","./assets/UI/empty.jpg",SDL_Rect{725,147,709,1417});
+    postFight_charAnim1.ScaleUp(0.8,1,0.5);
+    UIElement postFight_charAnim2("char2","./assets/UI/empty.jpg",SDL_Rect{1206,112,709,1417});
+    postFight_charAnim2.ScaleUp(0.8,1,0.5);
+    UIElement postFight_charAnim3("char3","./assets/UI/empty.jpg",SDL_Rect{972,-75,709,1417});
+    postFight_charAnim3.ScaleUp(0.8,1,0.5);
 
-    UIElement postFight_materialTier1("tier1Mat","./assets/UI/matTier1.png",SDL_Rect{211,475,211,398});
+    UIElement postFight_materialTier1("tier1Mat","./assets/UI/matTier1.png",SDL_Rect{311,475,211,398});
     postFight_materialTier1.GetTransform().scale = 0.3f;
-    UIElement postFight_materialTier2("tier2Mat","./assets/UI/matTier2.png",SDL_Rect{417,489,211,398});
+    UIElement postFight_materialTier2("tier2Mat","./assets/UI/matTier2.png",SDL_Rect{517,489,211,398});
     postFight_materialTier2.GetTransform().scale = 0.2f;
-    UIElement postFight_materialTier3("tier3Mat","./assets/UI/matTier3.png",SDL_Rect{590,497,211,398});
+    UIElement postFight_materialTier3("tier3Mat","./assets/UI/matTier3.png",SDL_Rect{690,497,211,398});
     postFight_materialTier3.GetTransform().scale = 0.15f;
 
-    Text postFight_tier1Gained("tier1Gained","./assets/fonts/combat_main.ttf",SDL_Rect{271,500,211,398},"100",SDL_Color{255,255,255},50);
-    Text postFight_tier2Gained("tier2Gained","./assets/fonts/combat_main.ttf",SDL_Rect{477,500,211,398},"100",SDL_Color{255,255,255},50);
-    Text postFight_tier3Gained("tier3Gained","./assets/fonts/combat_main.ttf",SDL_Rect{640,500,211,398},"100",SDL_Color{255,255,255},50);
+    Text postFight_tier1Gained("tier1Gained","./assets/fonts/combat_main.ttf",SDL_Rect{371,500,211,398},"100",SDL_Color{255,255,255},50);
+    Text postFight_tier2Gained("tier2Gained","./assets/fonts/combat_main.ttf",SDL_Rect{577,500,211,398},"100",SDL_Color{255,255,255},50);
+    Text postFight_tier3Gained("tier3Gained","./assets/fonts/combat_main.ttf",SDL_Rect{740,500,211,398},"100",SDL_Color{255,255,255},50);
 
     Sprite postFight_nodeStar1("lessthan5","./assets/UI/postBattleStarEmpty.png",SDL_Rect{404,625,90,87});
     postFight_nodeStar1.AddState("got","./assets/UI/postBattleStarGot.png");
