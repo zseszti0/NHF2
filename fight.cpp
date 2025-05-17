@@ -91,7 +91,6 @@ void Fight::ConfigureStartingState(){
         }
     }
 
-
     fieldMobs.clear();
     int xpos = 143;
     for(auto& ch : characters) {

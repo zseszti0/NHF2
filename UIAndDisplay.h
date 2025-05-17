@@ -1,12 +1,6 @@
-/// VISUAL HANDLER
-///
-/// purpose: ----
-/// The visualHandler header is responsible for the managing and handling of the different Scene comps of the game.
-/// That includes switching seamlessly between scenes, rendering its background and UI elements (like buttons and text).
-///
-/// classes: ----
-/// Scene, UIElement, Button, Sprite
-
+/*
+The UIAndDisplay.h file defines the foundational UI components of the game. It establishes a hierarchy of classes to represent various UI elements, enabling modularity, reusability, and ease of maintenance. The design draws inspiration from frameworks like Unity, emphasizing a component-based architecture.
+*/
 #ifndef VISUALHANDLER_H
 #define VISUALHANDLER_H
 
@@ -18,7 +12,6 @@
 #include <functional>
 #include <string>
 #include <iostream>
-#include <functional>
 #include <memory>
 
 class UIElement;
@@ -47,7 +40,38 @@ struct Transform {
 };
 #include "animation.h"
 
-///UI elements isn't an abstract class, as it can be used on it's on (for example rendering just a lonely image to the screen)
+/*
+Purpose: UIElement serves as the base class for all UI components, encapsulating common properties and behaviors such as positioning, visibility, rendering, and animation.
+
+Key Members:
+•	std::string name;
+•	std::shared_ptr<SDL_Texture> texture;
+•	Transform transform;
+•	bool visible;
+•	Animation* anim;
+
+Core Functions:
+•	void Render();
+Renders the UI element using its texture and transform properties.
+•	void SetTexture(std::shared_ptr<SDL_Texture> tex);
+Assigns a new texture to the UI element.
+•	void SetVisible(bool isVisible);
+Sets the visibility state of the UI element.
+•	Transform& GetTransform(int x, int y);
+Helps change the transform of the element.
+•	void Tint(SDL_Color color);
+Applies a color tint to the UI element.
+•	void Untint();
+Removes any applied color tint.
+•	void addTweeny(Animation* animation);
+Assigns an animation to the UI element.
+
+Design Considerations:
+•	Smart Pointers: Utilizes std::shared_ptr for texture management to ensure proper memory handling and avoid leaks.
+•	Transform Structure: Inspired by Unity's Transform component, it encapsulates position, scale, and rotation, promoting a clean and intuitive interface for spatial manipulations.
+•	Animation Integration: The anim pointer allows for dynamic animations, enabling smooth transitions and effects.
+
+*/
 class UIElement {
 protected:
   std::string name;
@@ -93,7 +117,32 @@ public:
 
   virtual ~UIElement();
 };
-///Trivial usecase. Works with costum callBack functions to suit each buttons need.
+
+/*
+Purpose: Button extends UIElement to represent interactive buttons with event handling capabilities.
+
+Key Members:
+•	std::function<void()> onClick;
+•	std::function<void()> onRelease;
+•	std::function<void()> onHover;
+•	bool isActive;
+•	SDL_Rect clickField;
+
+Core Functions:
+•	bool HandleClick/ HandleHover(int mouseX, int mouseY);
+Processes SDL events to determine if the button was clicked, released, or hovered over, invoking the corresponding callbacks. Returns true if cicked/hovered.
+•	void AddOnClick/AddHoverBehaviour(std::function<void()> func);
+Assigns a functions to be called upon a mouse event.
+•	void Disable(bool)
+Adjusts the activity of a button.
+•	Static void AddBasicScaleUpHoverAnim(…)
+Static function, to add a simple scale up hover animation to a Button. Used frequently, hence the preset.
+
+Design Considerations:
+•	Lambda Functions: Embraces the use of lambdas for event callbacks, providing flexibility and encapsulation of behavior.
+•	Active State Management: The isActive flag allows for enabling or disabling button interactions dynamically.
+•	Custom Click Field: The clickField member defines the interactive area, which can differ from the visual representation, offering precise control over user interactions.
+*/
 class Button : virtual public UIElement {
 protected:
   std::function<void()> onClick;
@@ -125,7 +174,27 @@ public:
 
   ~Button() override;
 };
-///Sprites with one layer of changing element. Can switch between states, given its name.
+
+/*
+Purpose: Sprite extends UIElement to manage multiple textures, facilitating state changes and animations.
+
+Key Members:
+•	std::vector<std::string> stateNames;
+•	std::vector<std::shared_ptr<SDL_Texture>> textures;
+•	int currentStateIndex;
+
+Core Functions:
+•	void AddState(cosnt char* name, std::shared_ptr<SDL_Texture> tex);
+Adds a new state with the associated texture.
+•	void ChangeState(cosnt char* name/int index);
+Switches to the texture associated with the given state name or index.
+•	std::shared_ptr<SDL_Texture> GetTextureAt(cosnt char* name/int index);
+Returns the texture at a specific state.
+
+Design Considerations:
+•	State Management: Allows for dynamic switching between different visual states, essential for representing animations, status changes or packing different states to a ui element.
+•	Texture Organization: By associating names with textures, it simplifies the process of identifying and switching between states.
+*/
 class Sprite : virtual public UIElement {
 protected:
   std::vector<std::shared_ptr<SDL_Texture>> states;
@@ -157,7 +226,28 @@ public:
 
   ~Sprite() override;
 };
-///Text yippie
+
+/*
+Purpose: Text extends UIElement to render textual content with customizable properties.
+
+Key Members:
+•	std::string content;
+•	TTF_Font* font;
+•	SDL_Color color;
+•	int fontSize;
+
+Core Functions:
+•	void ChangeText(std::string newText);
+Updates the displayed text content.
+•	void ChangeFont(TTF_Font* newFont);
+Changes the font used for rendering text.
+•	void ChangeColor(SDL_Color newColor);
+Sets the color of the text.
+
+Design Considerations:
+•	Dynamic Text Rendering: Facilitates real-time updates to text content, essential for displaying changing game information.
+•	Customization: Offers flexibility in appearance through adjustable fonts, sizes, and colors.
+*/
 class Text : virtual public UIElement {
 protected:
   std::string text;
@@ -178,6 +268,17 @@ public:
 
   ~Text() override;
 };
+/*
+Purpose: OutlinedText inherits from Text to render text with an outline, enhancing readability against various backgrounds.
+
+Key Members:
+•	SDL_Color outlineColor;
+•	int outlineSize;
+
+Design Considerations:
+•	Enhanced Visibility: Outlining text improves visibility, especially in visually complex scenes.
+•	Separate Class: By creating a distinct class, it avoids cluttering the base Text class with outline-specific logic.
+*/
 class OutlinedText : public Text {
   SDL_Color outlineColor{};
   TTF_Font* outlineFont;
@@ -193,7 +294,27 @@ public:
   ~OutlinedText() override;
 };
 
-///Bar for hp bars, ult bars, anything that has a max value and visually its.. like.. a bar
+/*
+Purpose: Bar extends UIElement to represent progress indicators like health or mana bars.
+
+Key Members:
+•	double* valuePtr;
+•	double maxValue;
+•	std::shared_ptr<SDL_Texture> barTexture;
+•	bool dir;
+
+Core Functions:
+•	void update();
+Recalculates the fill level texture based on the current value.
+•	void SetCur(double* cur);
+Assigns the pointer to the value being tracked.
+•	void setMax (double max);
+Sets the maximum value charge for the bar.
+Design Considerations:
+
+•	Pointer Usage: By referencing a value directly, the bar reflects real-time changes without additional updates.
+•	Flexible Orientation: Supports multiple fill directions, accommodating various UI designs.
+*/
 class Bar : public UIElement {
   double maxValue = 0;
   double* currentValue = nullptr;
@@ -233,6 +354,9 @@ public:
   ~Bar() override;
 };
 
+/*
+Purpose: Composite class for interactive buttons with multiple texture states.
+*/
 class SpriteButton : public Sprite, public Button {
 public:
   SpriteButton(const char* n, const char* path,SDL_Rect rect,std::function<void()> func)
@@ -241,6 +365,10 @@ public:
   void Render() override;
   ~SpriteButton() override;
 };
+
+/*
+Purpose: Composite class for interactive buttons with text on top, enabling mass producing similar option buttons (e.g. for tutorials).
+*/
 class TextButton : public Text, public Button {
   std::shared_ptr<SDL_Texture> textTexture;
   SDL_Rect textRect{};

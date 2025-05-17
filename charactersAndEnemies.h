@@ -1,3 +1,17 @@
+/*
+The combat system’s foundation relies on the Mob abstraction, which encapsulates shared behaviors of both player-controlled characters and AI enemies. This approach enforces clean inheritance and enables scalable combat logic.
+Overarching Design Considerations:
+•	All combatants inherit from Mob, allowing them to maintain:
+o	Core battle-related stats,
+o	A mechanism for dynamic changes during battle (like buffs),
+o	A visual representation for both gameplay and narrative menus,
+o	A robust system for stat restoration and level progression.
+•	Stat Separation: Combat depends on easily changable current stats (currentStats) derived from persistent base stats (baseStats). This duality makes stat manipulation (buffs, debuffs, damage) clean and reversible.
+•	Buff System: A time-bound system for stat modifications that expire and revert properly, supporting deep turn-based mechanics.
+•	Smart Visual Design: Every Mob includes a sprite loaded via a name-based asset pathing convention, simplifying visual logic across both enemies and player characters.
+•	Save-Compatibility: Characters are loaded and saved using helper functions (see filesAndSaving.h) that persist levels, stats, and progress across sessions.
+
+*/
 #ifndef COMBAT_H
 #define COMBAT_H
 
@@ -46,9 +60,9 @@ struct TypeMultiplier {
 };
 
 struct Buff {
-    std::string type;
-    double amount;
-    int turnsLeft;
+        std::string type;
+        double amount;
+        int turnsLeft;
 };
 struct Dmg {
     double amount ;
@@ -64,7 +78,50 @@ struct SkillStruct {
     int activeCooldown;
 };
 
+/*
+Purpose: Serves as the base class for all entities that participate in battle: both Character and Enemy. It provides shared mechanisms for stat handling, damage, buffs, leveling, and visuals.
 
+elper Structs/Enums:
+•	struct Buff {
+std::string type;
+double amount;
+int turnsLeft;
+};
+•	struct Dmg {
+double amount ;
+bool isCrit;
+int starsGenerated;
+};
+
+Key Members:
+•	std::string name
+•	Sprite¬¬¬¬* sprite
+•	various doubles baseStats;
+•	various doubles currentStats;
+•	std::vector<Buff> buffs
+•	bool isDead
+•	int level
+
+Core Functions:
+•	void SetHp(double amount)
+Reduces HP; if HP drops to 0 or below, sets isDead = true.
+•	void ResetStats()
+Resets currentStats to baseStats; called at start of combat or post-buff cleanup.
+•	double& GetStat(const std::string& statName)
+Provides direct mutable reference to a specific stat in currentStats. Useful for buffs/debuffs.
+•	void AddBuff(Buff buff)
+Adds a new temporary buff to the Mob.
+•	void EraseBuff()
+Iterates over buffs and removes them if expired, restoring original stat values.
+•	void LevelUp()
+Increases level and uses a logarithmic formula to scale base stats accordingly.
+
+Design Considerations
+•	The use of GetStat() returning a double& is key to making buff and damage logic clean, avoiding unnecessary duplication or boilerplate.
+•	Buffs being managed as a vector allows stacking and turn-based expiration.
+•	The sprite is embedded directly in Mob, which simplifies loading visuals using the name as a filepath component.
+
+*/
 class Mob {
 protected:
     std::string name;
@@ -132,6 +189,40 @@ public:
     virtual ~Mob() = default;
 };
 
+/*
+Purpose: Represents the player’s controllable units in combat. Supports complex mechanics including skills, ultimates, visual variants, leveling, and persistence via file I/O.
+
+Key Members:
+•	Various extra doubles added for character specific base nd current stats.
+•	SDL_Color color - Unique color for this character, used in visual indicators and UI elements.
+•	SkillStruct skill – skill with costumized lambdas and a cooldown machnic.
+
+Helper Structs/Enums:
+•	struct SkillSturct {
+std::function<void(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself)> effect;
+int cooldown;
+int activeCooldown;
+};
+•	std::function<float(std::vector<Enemy*> targets,std::vector<Character*> allies, Character* herself)> ult;
+
+Core Methods:
+•	void CountdownTurn()
+Called each turn to reduce cooldown and check buffs.
+•	Dmg Normal(…)
+Executes one of three attack styles using CardType(Buster, Arts, Quick) enum. Each Normal type has slightly different abilities, defined by the TypeMultipler struct.
+•	void Skill(…)
+Executes the skill's effect if cooldown is ready.
+•	Dmg Ult(…)
+Executes the ultimate ability, if energy level is enough.
+
+Design Considerations:
+•	Sprites makes it trivial to swap a character’s visual depending on game context (menu, combat, overview, etc.).
+•	Skills being cooldown-based encourages planning and cooldown management.
+•	Skills and ultimates use std::function, allowing for flexible behavior without inheritance bloat.
+•	Color is an efficient visual cue to identify characters during combat and transitions.
+•	Characters are loaded from file via LoadCharactersFromFile() and saved via SaveCharactersToFile() (see filesAndSaving.h), preserving progress like levels and cooldown states.
+
+*/
 class Character : public Mob {
     double starGen,critDmg,starAbsorbB,starAbsorbA,starAbsorbQ;
     double currentER,currentStarGen,currentSpeed,currentCritDmg,currentStarAbsorbB,currentStarAbsorbA,currentStarAbsorbQ;
@@ -223,6 +314,20 @@ public:
     ~Character() override;
 };
 
+/*
+Purpose: Represents AI-controlled enemies in combat. Unlike Characters, they are not player-interactive and have hardcoded attack types with minimal external influence.
+
+Key Members:
+•	Added def and critRate current and base stats.
+
+Core Functions:
+•	void Atk1/2/3(Character¬* target)
+These methods execute set attack patterns on the given target.
+
+Design Considerations:
+•	Despite being simpler than Character, the inclusion of different attack types adds strategic depth and variety.
+
+*/
 class Enemy : public Mob{
 
     double def,critRate;

@@ -1,3 +1,13 @@
+/*
+Purpose: Handles file I/O for saving and loading game data.
+Key Functions:
+•	LoadCharactersFromFile()
+•	LoadEnemyFromFile()
+•	Save/load materials, progress, and tutorial state.
+Key Concepts:
+•	Tight integration with gameEngine.h, characters, and scene tutorials.
+•	Text-based file format for ease of debugging and flexibility.
+*/
 #ifndef FILESANDSAVING_H
 #define FILESANDSAVING_H
 

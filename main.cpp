@@ -1,3 +1,10 @@
+///Consider reading the documentation before use. Some functions and classes are documented here too
+///But most logic and design philosophies are explaned throughly there.
+///:3 happy playing!!
+///
+///
+///
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>

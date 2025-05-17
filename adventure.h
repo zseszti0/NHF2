@@ -1,3 +1,6 @@
+/*
+For usage explnation, read: scene.h AdventuresMenu
+*/
 #ifndef ADVENTURE_H
 #define ADVENTURE_H
 #include <string>
