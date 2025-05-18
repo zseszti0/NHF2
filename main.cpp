@@ -1,5 +1,5 @@
 ///Consider reading the documentation before use. Some functions and classes are documented here too
-///But most logic and design philosophies are explaned throughly there.
+///But most logic and design philosophies are explained thoroughly there.
 ///:3 happy playing!!
 ///
 ///
