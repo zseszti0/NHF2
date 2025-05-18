@@ -368,8 +368,10 @@ void OutlinedText::Render() {
 void OutlinedText::ChangeFont(const char *fontPath) {
     TTF_CloseFont(font);
     font = TTF_OpenFont(fontPath, size);
-    TTF_SetFontOutline(outlineFont, outlineSize);
+
+    TTF_CloseFont(outlineFont);
     outlineFont = TTF_OpenFont(fontPath, size);
+    TTF_SetFontOutline(outlineFont, outlineSize);
 }
 
 
