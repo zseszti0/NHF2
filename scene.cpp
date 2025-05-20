@@ -542,6 +542,30 @@ void AdventuresMenu::InitPreFights() {
         node->CreatePreFight(preFightTutorials);
     }
 }
+void AdventuresMenu::TutorialsMenuNext() {
+    if (tutorialsOverlay->GetCurrentStateIndex() == tutorialsOverlay->GetNumberOfStates()-1) {
+        tutorialsOverlay->SetVisible(false);
+        tutorialsOverlay->Disable(true);
+        tutorialsActive = false;
+
+        UpdateProfileTutorial(tutorialsOverlay->GetName().c_str());
+
+        tutorialsOverlay = nullptr;
+
+        for (auto& element : uiBoundle) {
+            auto button = dynamic_cast<Button*>(element);
+            if (button) {
+                button->Disable(false);
+            }
+        }
+        for (auto& node : nodes) {
+            node->Disable(false);
+        }
+        return;
+    }
+    tutorialsOverlay->ChangeState(tutorialsOverlay->GetCurrentStateIndex()+1);
+}
+
 
 AdventuresMenu::~AdventuresMenu(){
     SDL_DestroyTexture(bg);
@@ -567,6 +591,42 @@ void AdventuresMenu::PositionNodes() {
 }
 void AdventuresMenu::UpdateLastNode(FightNodeStars starsGot) {
     nodes.at(lastAttempted)->UpdateStars(starsGot);
+}
+void AdventuresMenu::Init() {
+    if (tutorialsActive) {
+        if (tutorialsOverlay->GetCurrentStateIndex() == tutorialsOverlay->GetNumberOfStates()-1) {
+            tutorialsOverlay->SetVisible(false);
+            tutorialsOverlay->Disable(true);
+            tutorialsActive = false;
+
+            UpdateProfileTutorial(tutorialsOverlay->GetName().c_str());
+
+            tutorialsOverlay = nullptr;
+
+            for (auto& element : uiBoundle) {
+                auto button = dynamic_cast<Button*>(element);
+                if (button) {
+                    button->Disable(false);
+                }
+            }
+            for (auto& node : nodes) {
+                node->Disable(false);
+            }
+            return;
+        }
+
+        tutorialsOverlay->SetVisible(true);
+        tutorialsOverlay->Disable(false);
+        for (auto& element : uiBoundle) {
+            auto button = dynamic_cast<Button*>(element);
+            if (button) {
+                button->Disable(true);
+            }
+        }
+        for (auto& node : nodes) {
+            node->Disable(true);
+        }
+    }
 }
 
 void AdventuresMenu::WriteNodeDataToFile() {

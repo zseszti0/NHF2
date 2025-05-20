@@ -26,6 +26,7 @@ class FightNode {
     std::vector<Enemy*> enemies;
 
     PreFight* preFight = nullptr;
+    bool isActive = true;
 public:
 
     FightNode(const char* source);
@@ -59,13 +60,15 @@ public:
 
 
     bool HandleClick(int mouseX, int mouseY) {
-        if (mouseX > icon->GetTransform().position.x && mouseX < icon->GetTransform().position.x + icon->GetTransform().position.w && mouseY > icon->GetTransform().position.y && mouseY < icon->GetTransform().position.y + icon->GetTransform().position.h) {
-            Start();
-            return true;
+        if (isActive) {
+            if (mouseX > icon->GetTransform().position.x && mouseX < icon->GetTransform().position.x + icon->GetTransform().position.w && mouseY > icon->GetTransform().position.y && mouseY < icon->GetTransform().position.y + icon->GetTransform().position.h) {
+                Start();
+                return true;
+            }
         }
         return false;
     }
-
+    void Disable(bool d){isActive  = !d;}
     void HandleHover(int mouseX, int mouseY) {
 
     }

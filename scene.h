@@ -74,7 +74,7 @@ public:
   Scene(const char* n, const char* texturePath);
   virtual void Init();
   void AddTutorialsMenu(SpriteButton* overlay){tutorialsOverlay = overlay; tutorialsActive = true;}
-  void TutorialsMenuNext();
+  virtual void TutorialsMenuNext();
 
   void AddUIElement(UIElement* newElement);
   void AddUIElement(std::vector<UIElement*>& newElements);
@@ -484,6 +484,9 @@ public:
   void InitPreFights();
   void AddPreFightTutorials(SpriteButton* overlay){preFightTutorials = overlay;}
   void PositionNodes();
+  void TutorialsMenuNext() override;
+
+  void Init() override;
 
   void CheckButtonsOnClick(int mouseX, int mouseY) override;
   void CheckButtonsHover(int mouseX, int mouseY) override;
