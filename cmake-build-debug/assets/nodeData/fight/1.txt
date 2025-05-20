@@ -1,4 +1,4 @@
-trialRun true true true true
+trialRun false false false false
 squid 1
 snail 5
 squid 1

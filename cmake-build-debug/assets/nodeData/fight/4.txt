@@ -1,4 +1,4 @@
-trialRun true true true false
+trialRun false false false false
 squid 5
 rabbit 5
 totem 15

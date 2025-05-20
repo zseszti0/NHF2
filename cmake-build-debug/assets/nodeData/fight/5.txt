@@ -1,4 +1,4 @@
-trialRun true false false false
+trialRun false false false false
 rabbit 15
 rabbit 15
 rabbit 15
